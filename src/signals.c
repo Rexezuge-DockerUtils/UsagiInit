@@ -1,4 +1,6 @@
 #include "signals.h"
+#include "phase.h"
+
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +11,9 @@ static void signal_handler(int signo) {
   // Forward signal to the entire process group
   if (signo == SIGINT || signo == SIGTERM || signo == SIGHUP) {
     kill(-1, signo);
-    exit(EXIT_SUCCESS);
+    if (phase == PHASE_GUARDIAN) {
+      exit(EXIT_SUCCESS);
+    }
   }
 }
 

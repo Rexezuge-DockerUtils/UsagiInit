@@ -1,4 +1,5 @@
 #include "logger.h"
+#include "phase.h"
 #include "shell/executor.h"
 #include "signals.h"
 
@@ -11,6 +12,7 @@
 #define MAX_CMD_LEN 1024
 
 int main(void) {
+  LOG_INFO("Init Begin");
   char *line = (char *)malloc(MAX_CMD_LEN);
   if (!line) {
     LOG_ERROR("fopen: %s\n", strerror(errno));
@@ -19,6 +21,7 @@ int main(void) {
 
   setup_signal_forwarding();
 
+  phase = PHASE_SHELL;
   while (1) {
     printf("$> ");
     fflush(stdout);
@@ -31,6 +34,7 @@ int main(void) {
 
   free(line);
   LOG_INFO("Init Complete");
+  phase = PHASE_GUARDIAN;
   fflush(stdout);
 
   while (1) {
