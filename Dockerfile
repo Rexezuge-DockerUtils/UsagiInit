@@ -17,7 +17,7 @@ RUN chmod +x scripts/release_static.sh
 RUN ./scripts/release_static.sh
 
 # Final stage
-FROM alpine:3
+FROM scratch
 
 COPY --from=0 /app/UsagiInit /UsagiInit
 
