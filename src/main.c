@@ -1,7 +1,11 @@
+#include "logger.h"
 #include "shell/executor.h"
 #include "signals.h"
+
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 
 #define MAX_CMD_LEN 1024
@@ -9,7 +13,7 @@
 int main(void) {
   char *line = (char *)malloc(MAX_CMD_LEN);
   if (!line) {
-    perror("malloc");
+    LOG_ERROR("fopen: %s\n", strerror(errno));
     return EXIT_FAILURE;
   }
 
@@ -26,11 +30,12 @@ int main(void) {
   }
 
   free(line);
-  printf("\nInit Complete\n");
+  LOG_INFO("Init Complete");
   fflush(stdout);
 
-  while (1)
+  while (1) {
     waitpid(-1, NULL, 0);
+  }
 
   return 0;
 }

@@ -5,6 +5,11 @@ project(UsagiInit LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+# Configure Release Only Definitions
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_compile_definitions(APP_NAME="${PROJECT_NAME}")
+endif()
+
 # Configure Library Sources (exclude main.c)
 file(GLOB LIB_SOURCES "src/*.c" "src/*/*.c")
 list(REMOVE_ITEM LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
