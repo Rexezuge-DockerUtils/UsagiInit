@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "shell/command.h"
 
 #define MAX_CMD_LEN 1024
 #define MAX_ARGS 128
