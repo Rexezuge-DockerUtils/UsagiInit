@@ -2,7 +2,7 @@
 #include "signals.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <sys/wait.h>
 
 #define MAX_CMD_LEN 1024
 
@@ -13,7 +13,7 @@ int main(void) {
     return EXIT_FAILURE;
   }
 
-  setup_signal_forwarding(); // << Install handlers
+  setup_signal_forwarding();
 
   while (1) {
     printf("$> ");
