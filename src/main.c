@@ -1,4 +1,5 @@
 #include "shell/executor.h"
+#include "signals.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,6 +12,8 @@ int main(void) {
     perror("malloc");
     return EXIT_FAILURE;
   }
+
+  setup_signal_forwarding(); // << Install handlers
 
   while (1) {
     printf("$> ");

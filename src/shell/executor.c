@@ -21,6 +21,7 @@ static void execute_pipeline(char *cmdline) {
   for (int i = 0; i < num_cmds - 1; ++i) {
     pipe(fd);
     if (fork() == 0) {
+      setpgid(0, 0); // New process group
       dup2(in_fd, STDIN_FILENO);
       if (i < num_cmds - 2)
         dup2(fd[1], STDOUT_FILENO);
@@ -67,11 +68,13 @@ void run_command(char *line) {
 
   pid_t pid = fork();
   if (pid == 0) {
+    setpgid(0, 0); // Make the child the leader of a new process group
     handle_redirection(args);
     execvp(args[0], args);
     perror("execvp");
     exit(EXIT_FAILURE);
   } else if (!background) {
+    setpgid(pid, pid); // Ensure process group is set in parent context as well
     waitpid(pid, NULL, 0);
   }
 }
