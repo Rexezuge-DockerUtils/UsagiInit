@@ -17,7 +17,7 @@ RUN chmod +x scripts/release_static.sh
 RUN ./scripts/release_static.sh
 
 # Final stage
-FROM scratch
+FROM busybox:stable-musl
 
 COPY --from=0 /app/UsagiInit /UsagiInit
 
