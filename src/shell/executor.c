@@ -68,6 +68,12 @@ static void execute_pipeline(char *cmdline) {
 }
 
 void run_command(char *line) {
+  line = trim_whitespace(line);
+
+  // Skip empty lines and comments (lines starting with #)
+  if (line[0] == '\0' || line[0] == '#') {
+    return;
+  }
   int background = 0;
 
   if (strchr(line, '|') != NULL) {
@@ -79,8 +85,6 @@ void run_command(char *line) {
     background = 1;
     *strchr(line, '&') = '\0';
   }
-
-  line = trim_whitespace(line);
 
   char *args[MAX_ARGS];
   parse_command(line, args);
