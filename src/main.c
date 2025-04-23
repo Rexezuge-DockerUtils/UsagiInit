@@ -1,7 +1,9 @@
+#include "gVariables.h"
 #include "logger.h"
-#include "phase.h"
 #include "shell/executor.h"
+#include "shell/prompt.h"
 #include "signals.h"
+#include "types.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -48,6 +50,7 @@ int main(int argc, char *argv[]) {
       return EXIT_FAILURE;
     }
     close(script_fd);
+    interactivity = NONINTERACTIVE;
     LOG_INFO("Stdin successfully redirected");
   }
 
@@ -62,8 +65,7 @@ int main(int argc, char *argv[]) {
   phase = PHASE_SHELL;
 
   while (1) {
-    printf("$> ");
-    fflush(stdout);
+    prompt_for_intput();
 
     if (!fgets(line, MAX_CMD_LEN, stdin))
       break;

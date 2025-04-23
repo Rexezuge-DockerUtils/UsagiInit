@@ -1,0 +1,5 @@
+#pragma once
+
+enum { PHASE_BEGIN, PHASE_SHELL, PHASE_GUARDIAN };
+
+enum { INTERACTIVE, NONINTERACTIVE };

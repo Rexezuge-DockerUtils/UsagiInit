@@ -1,5 +1,7 @@
 #include "signals.h"
-#include "phase.h"
+#include "gVariables.h"
+#include "shell/prompt.h"
+#include "types.h"
 
 #include <signal.h>
 #include <stdio.h>
@@ -15,8 +17,7 @@ static void signal_handler(int signo) {
     if (phase == PHASE_GUARDIAN) {
       exit(EXIT_SUCCESS);
     } else if (phase == PHASE_SHELL) {
-      printf("\n$> ");
-      fflush(stdout);
+      prompt_for_intput();
       tcflush(STDIN_FILENO, TCIFLUSH);
     }
   }
