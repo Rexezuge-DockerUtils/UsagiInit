@@ -14,6 +14,10 @@
 #define MAX_CMD_LEN 1024
 
 int main(int argc, char *argv[]) {
+  LOG_INFO("          /\\_/\\");
+  LOG_INFO("         ( o.o )        UsagiInit");
+  LOG_INFO("          > ^ <");
+
   LOG_INFO("Init Begin");
 
   const char *script_path = "UsagiInit.sh";
