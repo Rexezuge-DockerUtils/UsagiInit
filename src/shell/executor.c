@@ -71,9 +71,12 @@ void run_command(char *line) {
   line = trim_whitespace(line);
 
   // Skip empty lines and comments (lines starting with #)
-  if (line[0] == '\0' || line[0] == '#') {
+  if (line[0] == '\0' || line[0] == '#' || line[0] == '\n') {
     return;
   }
+
+  LOG_INFO("RUN: %s", line);
+
   int background = 0;
 
   if (strchr(line, '|') != NULL) {
