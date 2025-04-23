@@ -28,3 +28,15 @@ void handle_redirection(char **args) {
     }
   }
 }
+
+char *trim_whitespace(char *str) {
+  while (*str == ' ' || *str == '\t')
+    str++;
+  if (*str == 0)
+    return str;
+  char *end = str + strlen(str) - 1;
+  while (end > str && (*end == ' ' || *end == '\t' || *end == '\n'))
+    end--;
+  *(end + 1) = 0;
+  return str;
+}

@@ -11,13 +11,16 @@
 #include <unistd.h>
 
 #define MAX_ARGS 128
+#define MAX_CMDS 10
 
 static void execute_pipeline(char *cmdline) {
-  char *cmds[10];
+  char *cmds[MAX_CMDS];
   int num_cmds = 0;
 
-  cmds[num_cmds++] = strtok(cmdline, "|");
-  while ((cmds[num_cmds++] = strtok(NULL, "|")) != NULL)
+  // Tokenize pipeline
+  cmds[num_cmds++] = trim_whitespace(strtok(cmdline, "|"));
+  while (num_cmds < MAX_CMDS &&
+         (cmds[num_cmds++] = trim_whitespace(strtok(NULL, "|"))) != NULL)
     ;
 
   int fd[2], in_fd = 0;
@@ -26,25 +29,47 @@ static void execute_pipeline(char *cmdline) {
     if (fork() == 0) {
       setpgid(0, 0); // New process group
       dup2(in_fd, STDIN_FILENO);
-      if (i < num_cmds - 2)
+      if (i < num_cmds - 2) {
         dup2(fd[1], STDOUT_FILENO);
+      }
       close(fd[0]);
+      close(fd[1]);
 
       char *args[MAX_ARGS];
       parse_command(cmds[i], args);
       handle_redirection(args);
+
       execvp(args[0], args);
-      perror("exec");
+      perror("execvp");
       exit(EXIT_FAILURE);
     }
+
     wait(NULL);
     close(fd[1]);
     in_fd = fd[0];
   }
+
+  // Final command in pipeline
+  if (fork() == 0) {
+    setpgid(0, 0);
+    dup2(in_fd, STDIN_FILENO);
+
+    char *args[MAX_ARGS];
+    parse_command(cmds[num_cmds - 1], args);
+    handle_redirection(args);
+
+    execvp(args[0], args);
+    perror("execvp");
+    exit(EXIT_FAILURE);
+  }
+
+  close(in_fd);
+  wait(NULL);
 }
 
 void run_command(char *line) {
   int background = 0;
+
   if (strchr(line, '|') != NULL) {
     execute_pipeline(line);
     return;
@@ -55,8 +80,11 @@ void run_command(char *line) {
     *strchr(line, '&') = '\0';
   }
 
+  line = trim_whitespace(line);
+
   char *args[MAX_ARGS];
   parse_command(line, args);
+
   if (args[0] == NULL)
     return;
 
@@ -66,18 +94,19 @@ void run_command(char *line) {
     return;
   }
 
-  if (strcmp(args[0], "exit") == 0)
+  if (strcmp(args[0], "exit") == 0) {
     exit(0);
+  }
 
   pid_t pid = fork();
   if (pid == 0) {
-    setpgid(0, 0); // Make the child the leader of a new process group
+    setpgid(0, 0);
     handle_redirection(args);
     execvp(args[0], args);
     LOG_ERROR("%s: %s\n", args[0], strerror(errno));
     exit(EXIT_FAILURE);
   } else if (!background) {
-    setpgid(pid, pid); // Ensure process group is set in parent context as well
+    setpgid(pid, pid);
     waitpid(pid, NULL, 0);
   }
 }
