@@ -15,10 +15,15 @@
   log_message("WARN", COLOR_WARN, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 #define LOG_ERROR(fmt, ...)                                                    \
   log_message("ERROR", COLOR_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define LOG_TRACE(fmt, ...)                                                    \
-  log_message("TRACE", COLOR_TRACE, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#ifdef APP_NAME
+#define LOG_DEBUG(fmt, ...) ((void)0)
+#define LOG_TRACE(fmt, ...) ((void)0)
+#else
 #define LOG_DEBUG(fmt, ...)                                                    \
   log_message("DEBUG", COLOR_DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define LOG_TRACE(fmt, ...)                                                    \
+  log_message("TRACE", COLOR_TRACE, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#endif
 
 // Function prototype
 void log_message(const char *level, const char *color, const char *file,
