@@ -1,6 +1,9 @@
 #include "shell/executor.h"
+#include "logger.h"
 #include "shell/parser.h"
 #include "shell/utils.h"
+
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,7 +74,7 @@ void run_command(char *line) {
     setpgid(0, 0); // Make the child the leader of a new process group
     handle_redirection(args);
     execvp(args[0], args);
-    perror("execvp");
+    LOG_ERROR("%s: %s\n", args[0], strerror(errno));
     exit(EXIT_FAILURE);
   } else if (!background) {
     setpgid(pid, pid); // Ensure process group is set in parent context as well
