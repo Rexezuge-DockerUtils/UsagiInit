@@ -40,7 +40,7 @@ static void execute_pipeline(char *cmdline) {
       handle_redirection(args);
 
       execvp(args[0], args);
-      perror("execvp");
+      LOG_ERROR("%s: %s\n", args[0], strerror(errno));
       exit(EXIT_FAILURE);
     }
 
@@ -59,7 +59,7 @@ static void execute_pipeline(char *cmdline) {
     handle_redirection(args);
 
     execvp(args[0], args);
-    perror("execvp");
+    LOG_ERROR("%s: %s\n", args[0], strerror(errno));
     exit(EXIT_FAILURE);
   }
 
@@ -90,7 +90,7 @@ void run_command(char *line) {
 
   if (strcmp(args[0], "cd") == 0) {
     if (args[1] == NULL || chdir(args[1]) != 0)
-      perror("cd");
+      LOG_ERROR("cd: %s\n", strerror(errno));
     return;
   }
 
