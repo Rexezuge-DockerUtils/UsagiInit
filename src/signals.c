@@ -8,10 +8,9 @@
 static void signal_handler(int signo) {
   // Forward signal to the entire process group
   if (signo == SIGINT || signo == SIGTERM || signo == SIGHUP) {
-    if (kill(-1, signo) < 0) {
-      perror("kill (signal forwarding)");
-    }
+    kill(-1, signo);
   }
+  exit(EXIT_SUCCESS);
 }
 
 void setup_signal_forwarding(void) {
