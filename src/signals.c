@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#include <termios.h>
 #include <unistd.h>
 
 static void signal_handler(int signo) {
@@ -13,6 +14,10 @@ static void signal_handler(int signo) {
     kill(-1, signo);
     if (phase == PHASE_GUARDIAN) {
       exit(EXIT_SUCCESS);
+    } else if (phase == PHASE_SHELL) {
+      printf("\n$> ");
+      fflush(stdout);
+      tcflush(STDIN_FILENO, TCIFLUSH);
     }
   }
 }
