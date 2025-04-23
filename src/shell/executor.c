@@ -75,7 +75,11 @@ void run_command(char *line) {
     return;
   }
 
-  LOG_INFO("RUN: %s", line);
+  if (line[0] == '%' && line[1] == ' ') {
+    LOG_INFO("GUARD: %s", line);
+  } else {
+    LOG_INFO("RUN: %s", line);
+  }
 
   int background = 0;
 
