@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     }
     close(script_fd);
     interactivity = NONINTERACTIVE;
-    LOG_INFO("Stdin successfully redirected");
+    LOG_DEBUG("stdin Successfully Redirected");
   }
 
   char *line = (char *)malloc(MAX_CMD_LEN);
