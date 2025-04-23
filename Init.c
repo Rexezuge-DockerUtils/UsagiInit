@@ -117,18 +117,27 @@ void run_command(char *line) {
   }
 }
 
-// 主循环
-int main() {
-  char line[MAX_CMD_LEN];
+int main(int argc, char **argv) {
+  char *line = (char *)malloc(MAX_CMD_LEN);
 
   while (1) {
     printf("$> ");
     fflush(stdout);
 
-    if (!fgets(line, sizeof(line), stdin))
+    if (!fgets(line, MAX_CMD_LEN, stdin)) {
       break;
+    }
 
     run_command(line);
+  }
+
+  free(line);
+
+  printf("\nInit Complete\n");
+  fflush(stdout);
+
+  while (1) {
+    waitpid(-1, NULL, 0);
   }
 
   return 0;
