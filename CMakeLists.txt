@@ -8,6 +8,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 # Configure Release Only Definitions
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_definitions(APP_NAME="${PROJECT_NAME}")
+    add_compile_definitions(RELEASE_MODE)
 endif()
 
 # Configure Library Sources (exclude main.c)

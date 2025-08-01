@@ -1,5 +1,6 @@
 #include "shell/executor.h"
 #include "logger.h"
+#include "services.h"
 #include "shell/parser.h"
 #include "shell/utils.h"
 
@@ -112,7 +113,9 @@ void run_command(char *line) {
     execvp(args[0], args);
     LOG_ERROR("%s: %s\n", args[0], strerror(errno));
     exit(EXIT_FAILURE);
-  } else if (!background) {
+  } else if (background) {
+    add_service(pid, args);
+  } else {
     setpgid(pid, pid);
     waitpid(pid, NULL, 0);
   }
