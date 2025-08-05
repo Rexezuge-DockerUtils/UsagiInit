@@ -1,5 +1,5 @@
 #include "shell/prompt.h"
-#include "gVariables.h"
+#include "globals.h"
 #include "types.h"
 
 #include <stdio.h>

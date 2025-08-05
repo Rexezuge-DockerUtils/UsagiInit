@@ -1,4 +1,4 @@
-#include "gVariables.h"
+#include "globals.h"
 #include "types.h"
 
 int phase = PHASE_BEGIN;

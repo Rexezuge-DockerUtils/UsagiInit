@@ -1,10 +1,11 @@
-#include "gVariables.h"
+#include "globals.h"
 #include "logger.h"
 #include "services.h"
 #include "shell/executor.h"
 #include "shell/prompt.h"
 #include "signals.h"
 #include "types.h"
+#include "guardian.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -15,11 +16,6 @@
 #include <unistd.h>
 
 #define MAX_CMD_LEN 1024
-#ifdef RELEASE_MODE
-#define MAX_RESTARTS 10
-#else
-#define MAX_RESTARTS 2
-#endif
 
 int main(int argc, char *argv[]) {
   LOG_INFO("          /\\_/\\");
@@ -85,34 +81,7 @@ int main(int argc, char *argv[]) {
   while (1) {
     int status;
     pid_t pid = waitpid(-1, &status, 0);
-
-    if (pid > 0) {
-      Service *service = find_service(pid);
-      if (service != NULL) {
-        if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
-          if (service->restart_count < MAX_RESTARTS) {
-            LOG_WARN("Service (PID: %d) failed with status %d. Restarting...",
-                     pid, WEXITSTATUS(status));
-            pid_t new_pid = fork();
-            if (new_pid == 0) {
-              execvp(service->args[0], service->args);
-              LOG_ERROR("Failed to restart service: %s", strerror(errno));
-              exit(EXIT_FAILURE);
-            } else {
-              service->pid = new_pid;
-              service->restart_count++;
-            }
-          } else {
-            LOG_ERROR(
-                "Service (PID: %d) has reached the maximum restart limit.",
-                pid);
-            remove_service(pid);
-          }
-        } else {
-          remove_service(pid);
-        }
-      }
-    }
+    handle_child_exit(pid, status);
   }
 
   exit(EXIT_SUCCESS);

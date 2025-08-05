@@ -1,5 +1,5 @@
 #include "signals.h"
-#include "gVariables.h"
+#include "globals.h"
 #include "shell/prompt.h"
 #include "types.h"
 
