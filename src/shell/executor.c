@@ -26,7 +26,10 @@ static void execute_pipeline(char *cmdline) {
 
   int fd[2], in_fd = 0;
   for (int i = 0; i < num_cmds - 1; ++i) {
-    pipe(fd);
+    if (pipe(fd) < 0) {
+      LOG_ERROR("pipe() error");
+      exit(EXIT_FAILURE);
+    }
     if (fork() == 0) {
       setpgid(0, 0); // New process group
       dup2(in_fd, STDIN_FILENO);

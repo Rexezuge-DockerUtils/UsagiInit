@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <linux/limits.h>
+#include <limits.h>
 
 #define MAX_SERVICES 100
 
@@ -28,9 +28,15 @@ void add_service(pid_t pid, char **args) {
 
   char path[PATH_MAX];
   if (args[0][0] == '/') {
-    strncpy(path, args[0], sizeof(path));
+    if (snprintf(path, sizeof(path), "%s", args[0]) >= sizeof(path)) {
+      LOG_ERROR("Path is too long.");
+      return;
+    }
   } else {
-    snprintf(path, sizeof(path), "%s/%s", cwd, args[0]);
+    if (snprintf(path, sizeof(path), "%s/%s", cwd, args[0]) >= sizeof(path)) {
+      LOG_ERROR("Path is too long.");
+      return;
+    }
   }
   
   services[service_count].args[0] = strdup(path);

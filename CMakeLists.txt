@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(UsagiInit LANGUAGES C)
 
+# Compiler Options                                                                                                │
+add_compile_options(-Wall)
+
 # C-Standard Configuration
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
