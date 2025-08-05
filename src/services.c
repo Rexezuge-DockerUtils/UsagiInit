@@ -1,10 +1,10 @@
 #include "services.h"
 #include "logger.h"
+#include <limits.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include <unistd.h>
-#include <limits.h>
 
 #define MAX_SERVICES 100
 
@@ -38,7 +38,7 @@ void add_service(pid_t pid, char **args) {
       return;
     }
   }
-  
+
   services[service_count].args[0] = strdup(path);
 
   for (i = 1; args[i] != NULL; i++) {

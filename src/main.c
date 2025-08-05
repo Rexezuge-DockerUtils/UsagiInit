@@ -1,11 +1,11 @@
 #include "globals.h"
+#include "guardian.h"
 #include "logger.h"
 #include "services.h"
 #include "shell/executor.h"
 #include "shell/prompt.h"
 #include "signals.h"
 #include "types.h"
-#include "guardian.h"
 
 #include <errno.h>
 #include <fcntl.h>
