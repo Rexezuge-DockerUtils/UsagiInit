@@ -47,7 +47,6 @@ void add_service(pid_t pid, char **args) {
   services[service_count].args[i] = NULL;
   services[service_count].restart_count = 0;
   service_count++;
-  LOG_INFO("Service added (PID: %d).", pid);
 }
 
 Service *find_service(pid_t pid) {

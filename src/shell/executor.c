@@ -79,18 +79,21 @@ void run_command(char *line) {
     return;
   }
 
-  LOG_INFO("RUN: %s", line);
-
   int background = 0;
+  if (strchr(line, '&')) {
+    background = 1;
+    *strchr(line, '&') = '\0';
+  }
+
+  if (background) {
+    LOG_INFO("SERVICE: %s", line);
+  } else {
+    LOG_INFO("RUN: %s", line);
+  }
 
   if (strchr(line, '|') != NULL) {
     execute_pipeline(line);
     return;
-  }
-
-  if (strchr(line, '&')) {
-    background = 1;
-    *strchr(line, '&') = '\0';
   }
 
   char *args[MAX_ARGS];
