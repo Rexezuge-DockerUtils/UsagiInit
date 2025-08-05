@@ -15,6 +15,11 @@
 #include <unistd.h>
 
 #define MAX_CMD_LEN 1024
+#ifdef RELEASE_MODE
+#define MAX_RESTARTS 10
+#else
+#define MAX_RESTARTS 2
+#endif
 
 int main(int argc, char *argv[]) {
   LOG_INFO("          /\\_/\\");
@@ -76,12 +81,6 @@ int main(int argc, char *argv[]) {
   LOG_INFO("Init Complete");
   phase = PHASE_GUARDIAN;
   fflush(stdout);
-
-  #ifdef RELEASE_MODE
-#define MAX_RESTARTS 10
-#else
-#define MAX_RESTARTS 2
-#endif
 
   while (1) {
     int status;
