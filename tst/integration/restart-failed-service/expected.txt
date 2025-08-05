@@ -1,0 +1,19 @@
+[INFO] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:25):           /\_/\
+[INFO] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:26):          ( o.o )        UsagiInit
+[INFO] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:27):           > ^ <
+[INFO] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:29): Init Begin
+[WARN] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:37): No Script Path Provided, Using Default: ./UsagiInit.sh
+[INFO] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:41): Attempting to Open Script: ./UsagiInit.sh
+[DEBUG] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:48): Script Opened Successfully: fd=3
+[DEBUG] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:49): Redirecting stdin to Script File
+[DEBUG] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:57): stdin Successfully Redirected
+[INFO] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/shell/executor.c:82): RUN: ./resources/unhappyService.sh &
+[INFO] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/services.c:50): Service added (PID: 9393).
+[INFO] 2025-08-05 19:01:51 (/home/user/workspace/UsagiInit/src/main.c:81): Init Complete
+Unhappy Service Error Terminated!
+[WARN] 2025-08-05 19:01:52 (/home/user/workspace/UsagiInit/src/main.c:94): Service (PID: 9393) failed with status 1. Restarting...
+Unhappy Service Error Terminated!
+[WARN] 2025-08-05 19:01:53 (/home/user/workspace/UsagiInit/src/main.c:94): Service (PID: 9397) failed with status 1. Restarting...
+Unhappy Service Error Terminated!
+[ERROR] 2025-08-05 19:01:54 (/home/user/workspace/UsagiInit/src/main.c:106): Service (PID: 9408) has reached the maximum restart limit.
+[INFO] 2025-08-05 19:01:54 (/home/user/workspace/UsagiInit/src/services.c:74): Service removed (PID: 9408).

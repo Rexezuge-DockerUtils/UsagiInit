@@ -1,0 +1,2 @@
+#!UsagiInit
+./resources/unhappyService.sh &

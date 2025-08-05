@@ -1,0 +1,51 @@
+#!/bin/bash
+
+set -euo pipefail
+
+echo "=== RUNNING INTEGRATION TEST CASE: restart-failed-service ==="
+
+PROGRAM_PATH="../../.."
+PROGRAM="$PROGRAM_PATH/UsagiInit"
+
+# Temporary files
+TMP_OUTPUT=$(mktemp)
+TMP_FILTERED_OUTPUT=$(mktemp)
+TMP_FILTERED_EXPECTED=$(mktemp)
+
+# Run program and redirect output
+"$PROGRAM" >"$TMP_OUTPUT" 2>&1 &
+PID=$!
+
+echo "=== Test program now running with PID: $PID ==="
+sleep 10
+kill -SIGINT "$PID"
+wait "$PID"
+
+# Normalize both actual and expected output
+normalize() {
+    sed -E \
+        -e 's/\x1B\[[0-9;]*[a-zA-Z]//g' \
+        -e 's/\[[A-Z]+\] [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]+/\[LOGLEVEL\] [TIMESTAMP]/g' \
+        -e 's/\(.*\/UsagiInit\/src\/[^)]+\)/\(SRC_PATH\)/g' \
+        -e 's/Service added \(PID: [0-9]+\)/Service added (PID: PID)/g' \
+        -e 's/Service \(PID: [0-9]+\)/Service (PID: PID)/g' \
+        -e 's/fd=[0-9]+/fd=FD/g' \
+        -e 's/Service removed \(PID: [0-9]+\)/Service removed (PID: PID)/g'
+}
+
+# Apply normalization
+normalize < "$TMP_OUTPUT" > "$TMP_FILTERED_OUTPUT"
+normalize < expected.txt > "$TMP_FILTERED_EXPECTED"
+
+# Compare normalized output
+echo "=== Comparing normalized output with expected.txt ==="
+if diff -u "$TMP_FILTERED_EXPECTED" "$TMP_FILTERED_OUTPUT"; then
+    echo "=== TEST CASE PASSED ==="
+    rm -f "$TMP_OUTPUT" "$TMP_FILTERED_OUTPUT" "$TMP_FILTERED_EXPECTED"
+else
+    echo "=== TEST CASE FAILED: Normalized output differs ==="
+    echo "Raw output retained at: $TMP_OUTPUT"
+    echo "Normalized output: $TMP_FILTERED_OUTPUT"
+    echo "Expected normalized: $TMP_FILTERED_EXPECTED"
+    exit 1
+fi
