@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
   if (argc > 1 && argv[1] != NULL) {
     script_path = argv[1];
   } else {
-    LOG_WARN("No Script Path Provided, Using Default: %s", script_path);
+    LOG_DEBUG("No Script Path Provided, Using Default: %s", script_path);
   }
 
   // Attempt to open script file
