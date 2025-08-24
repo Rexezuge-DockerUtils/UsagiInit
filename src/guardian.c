@@ -18,10 +18,16 @@ void handle_child_exit(pid_t pid, int status) {
   if (pid > 0) {
     Service *service = find_service(pid);
     if (service != NULL) {
-      if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+      if ((WIFEXITED(status) && WEXITSTATUS(status) != 0) ||
+          WIFSIGNALED(status)) {
         if (service->restart_count < MAX_RESTARTS) {
-          LOG_WARN("Service (PID: %d) failed with status %d. Restarting...",
-                   pid, WEXITSTATUS(status));
+          if (WIFEXITED(status)) {
+            LOG_WARN("Service (PID: %d) failed with status %d. Restarting...",
+                     pid, WEXITSTATUS(status));
+          } else {
+            LOG_WARN("Service (PID: %d) terminated by signal %d. Restarting...",
+                     pid, WTERMSIG(status));
+          }
           pid_t new_pid = fork();
           if (new_pid == 0) {
             execvp(service->args[0], service->args);
