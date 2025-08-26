@@ -70,7 +70,7 @@ void remove_service(pid_t pid) {
         services[j] = services[j + 1];
       }
       service_count--;
-      LOG_INFO("Service removed (PID: %d).", pid);
+      LOG_DEBUG("Service removed (PID: %d).", pid);
       return;
     }
   }

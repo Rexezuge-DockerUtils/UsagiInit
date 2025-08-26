@@ -15,4 +15,4 @@
 [WARN] 2025-08-26 18:52:33 (/home/user/workspace/UsagiInit/src/guardian.c:28): Service (unhappyService.sh) failed with status 1. Restarting...
 [TEST SERVICE] Unhappy Service Error Terminated!
 [ERROR] 2025-08-26 18:52:34 (/home/user/workspace/UsagiInit/src/guardian.c:45): Service (unhappyService.sh) has reached the maximum restart limit.
-[INFO] 2025-08-26 18:52:34 (/home/user/workspace/UsagiInit/src/services.c:73): Service removed (PID: 21013).
+[DEBUG] 2025-08-26 18:52:34 (/home/user/workspace/UsagiInit/src/services.c:73): Service removed (PID: 21013).
