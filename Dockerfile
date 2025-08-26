@@ -5,7 +5,7 @@ FROM alpine:3
 RUN apk add --no-cache cmake gcc make bash musl-dev
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /app/UsagiInit
 
 # Copy the entire project directory into the container
 COPY . .

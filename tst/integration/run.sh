@@ -40,7 +40,7 @@ cd "$CURRENT_DIR" || {
 ## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ## ===== INTEGRATION TESTS =====
 
-find "tst/integration" -mindepth 2 -name "run.sh" -execdir bash {} \;
+find "tst/integration" -mindepth 2 -name "run.sh" -exec sh -c 'cd "$(dirname "{}")" && bash "$(basename "{}")"' \;
 
 ## ===== INTEGRATION TESTS =====
 ## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
