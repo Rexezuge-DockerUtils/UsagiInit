@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "services.h"
 #include <errno.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,33 +19,37 @@ void handle_child_exit(pid_t pid, int status) {
   if (pid > 0) {
     Service *service = find_service(pid);
     if (service != NULL) {
+      char *service_name_dup = strdup(service->args[0]);
+      char *service_name = basename(service_name_dup);
       if ((WIFEXITED(status) && WEXITSTATUS(status) != 0) ||
           WIFSIGNALED(status)) {
         if (service->restart_count < MAX_RESTARTS) {
           if (WIFEXITED(status)) {
-            LOG_WARN("Service (PID: %d) failed with status %d. Restarting...",
-                     pid, WEXITSTATUS(status));
+            LOG_WARN("Service (%s) failed with status %d. Restarting...",
+                     service_name, WEXITSTATUS(status));
           } else {
-            LOG_WARN("Service (PID: %d) terminated by signal %d. Restarting...",
-                     pid, WTERMSIG(status));
+            LOG_WARN("Service (%s) terminated by signal %d. Restarting...",
+                     service_name, WTERMSIG(status));
           }
           pid_t new_pid = fork();
           if (new_pid == 0) {
             execvp(service->args[0], service->args);
-            LOG_ERROR("Failed to restart service: %s", strerror(errno));
+            LOG_ERROR("Service (%s) failed to be restarted: %s", service_name,
+                      strerror(errno));
             exit(EXIT_FAILURE);
           } else {
             service->pid = new_pid;
             service->restart_count++;
           }
         } else {
-          LOG_ERROR("Service (PID: %d) has reached the maximum restart limit.",
-                    pid);
+          LOG_ERROR("Service (%s) has reached the maximum restart limit.",
+                    service_name);
           remove_service(pid);
         }
       } else {
         remove_service(pid);
       }
+      free(service_name_dup);
     }
   }
 }
