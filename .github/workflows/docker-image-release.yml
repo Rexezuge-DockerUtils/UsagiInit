@@ -1,0 +1,41 @@
+name: Docker Image Release CI
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Set image name and tag
+      id: vars
+      run: |
+        IMAGE_NAME=rexezugebuild/v2ray-base-webapp
+        TAG=${GITHUB_REF#refs/tags/}  # Extract tag name from git ref
+
+        echo "image_name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+        echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+    - name: Build Docker image
+      run: |
+        docker build . \
+          --file Dockerfile \
+          --tag ${{ steps.vars.outputs.image_name }}:${{ steps.vars.outputs.tag }} \
+          --tag ${{ steps.vars.outputs.image_name }}:release
+
+    - name: Push Docker image to Docker Hub
+      run: |
+        docker push ${{ steps.vars.outputs.image_name }}:${{ steps.vars.outputs.tag }}
+        docker push ${{ steps.vars.outputs.image_name }}:release
