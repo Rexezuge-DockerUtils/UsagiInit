@@ -1,6 +1,8 @@
 #include "guardian.h"
+#include "globals.h"
 #include "logger.h"
 #include "services.h"
+
 #include <errno.h>
 #include <libgen.h>
 #include <stdio.h>
@@ -52,4 +54,13 @@ void handle_child_exit(pid_t pid, int status) {
       free(service_name_dup);
     }
   }
+
+#ifdef REINITIALIZE_ON_ALL_SERVICE_TERMINATION
+  if (get_service_count() == 0) {
+    LOG_FATAL("All services terminated. Reinitializing...");
+    execvp(usagi_argv[0], usagi_argv);
+    LOG_ERROR("Failed to restart UsagiInit: %s", strerror(errno));
+    exit(EXIT_FAILURE);
+  }
+#endif
 }

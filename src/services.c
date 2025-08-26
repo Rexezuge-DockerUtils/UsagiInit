@@ -75,3 +75,5 @@ void remove_service(pid_t pid) {
     }
   }
 }
+
+int get_service_count() { return service_count; }

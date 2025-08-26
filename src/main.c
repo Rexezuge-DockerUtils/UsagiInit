@@ -18,6 +18,8 @@
 #define MAX_CMD_LEN 1024
 
 int main(int argc, char *argv[]) {
+  usagi_argv = argv;
+
   LOG_INFO("          /\\_/\\");
   LOG_INFO("         ( o.o )        UsagiInit");
   LOG_INFO("          > ^ <");

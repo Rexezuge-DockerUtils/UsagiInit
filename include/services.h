@@ -13,3 +13,4 @@ typedef struct {
 void add_service(pid_t pid, char **args);
 Service *find_service(pid_t pid);
 void remove_service(pid_t pid);
+int get_service_count();
