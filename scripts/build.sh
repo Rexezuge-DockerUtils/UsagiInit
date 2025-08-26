@@ -40,7 +40,7 @@ cd "$CURRENT_DIR" || {
 echo "=== BUILDING (DEVELOPMENT) ==="
 
 # Configure the project
-cmake . -DCMAKE_BUILD_TYPE=Build -DCMAKE_FIND_LIBRARY_SUFFIXES=".a"
+cmake . -DCMAKE_BUILD_TYPE=Build -DCMAKE_FIND_LIBRARY_SUFFIXES=".a" $@
 
 # Build the project
 cmake --build .

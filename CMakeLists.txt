@@ -15,11 +15,18 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 # Configure Individual Definitions Based on Input
+message(STATUS "UsagiInit Feature Flags >>>")
 if(TERMINATE_ALL_PROCESSES STREQUAL "ON")
     add_compile_definitions(TERMINATE_ALL_PROCESSES)
+    message(STATUS "TERMINATE_ALL_PROCESSES: ON")
+else()
+    message(STATUS "TERMINATE_ALL_PROCESSES: OFF")
 endif()
 if(REINITIALIZE_ON_ALL_SERVICE_TERMINATION STREQUAL "ON")
     add_compile_definitions(REINITIALIZE_ON_ALL_SERVICE_TERMINATION)
+    message(STATUS "REINITIALIZE_ON_ALL_SERVICE_TERMINATION: ON")
+else()
+    message(STATUS "REINITIALIZE_ON_ALL_SERVICE_TERMINATION: OFF")
 endif()
 
 # Configure Library Sources (exclude main.c)
