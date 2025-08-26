@@ -13,7 +13,7 @@
 static void signal_handler(int signo) {
   // Forward signal to the entire process group
   if (signo == SIGINT || signo == SIGTERM || signo == SIGHUP) {
-#ifdef RELEASE_MODE
+#ifdef TERMINATE_ALL_PROCESSES
     kill(-1, signo);
 #endif
     if (phase == PHASE_GUARDIAN) {

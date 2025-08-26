@@ -44,7 +44,9 @@ rm ./UsagiInit
 echo "=== BUILDING (RELEASE-STATIC) ==="
 
 # Configure the project
-cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS="-static" -DCMAKE_FIND_LIBRARY_SUFFIXES=".a"
+cmake . -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS="-static" -DCMAKE_FIND_LIBRARY_SUFFIXES=".a" \
+        -DTERMINATE_ALL_PROCESSES=ON \
+        -DREINITIALIZE_ON_ALL_SERVICE_TERMINATION=ON
 
 # Build the project
 cmake --build .

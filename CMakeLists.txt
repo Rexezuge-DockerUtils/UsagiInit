@@ -14,6 +14,14 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_definitions(RELEASE_MODE)
 endif()
 
+# Configure Individual Definitions Based on Input
+if(TERMINATE_ALL_PROCESSES STREQUAL "ON")
+    add_compile_definitions(TERMINATE_ALL_PROCESSES)
+endif()
+if(REINITIALIZE_ON_ALL_SERVICE_TERMINATION STREQUAL "ON")
+    add_compile_definitions(REINITIALIZE_ON_ALL_SERVICE_TERMINATION)
+endif()
+
 # Configure Library Sources (exclude main.c)
 file(GLOB LIB_SOURCES "src/*.c" "src/*/*.c")
 list(REMOVE_ITEM LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
