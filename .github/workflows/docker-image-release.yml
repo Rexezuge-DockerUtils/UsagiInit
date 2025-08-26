@@ -22,7 +22,7 @@ jobs:
     - name: Set image name and tag
       id: vars
       run: |
-        IMAGE_NAME=rexezugebuild/v2ray-base-webapp
+        IMAGE_NAME=rexezuge/usagi-init
         TAG=${GITHUB_REF#refs/tags/}  # Extract tag name from git ref
 
         echo "image_name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
