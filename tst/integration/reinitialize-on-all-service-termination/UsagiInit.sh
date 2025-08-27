@@ -1,0 +1,2 @@
+#!UsagiInit
+./resources/terminatingService.sh &

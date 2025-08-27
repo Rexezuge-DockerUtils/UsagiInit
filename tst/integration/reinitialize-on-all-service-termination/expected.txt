@@ -1,0 +1,42 @@
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           /\_/\
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):          ( o.o )        UsagiInit
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           > ^ <
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Begin
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): No Script Path Provided, Using Default: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Attempting to Open Script: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Script Opened Successfully: fd=FD
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Redirecting stdin to Script File
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): stdin Successfully Redirected
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): SERVICE: ./resources/terminatingService.sh 
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Complete
+[TEST SERVICE] Terminating Service Started
+[TEST SERVICE] Terminating Service Exiting
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service removed (PID: PID).
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): All services terminated. Reinitializing...
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           /\_/\
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):          ( o.o )        UsagiInit
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           > ^ <
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Begin
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): No Script Path Provided, Using Default: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Attempting to Open Script: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Script Opened Successfully: fd=FD
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Redirecting stdin to Script File
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): stdin Successfully Redirected
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): SERVICE: ./resources/terminatingService.sh 
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Complete
+[TEST SERVICE] Terminating Service Started
+[TEST SERVICE] Terminating Service Exiting
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service removed (PID: PID).
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): All services terminated. Reinitializing...
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           /\_/\
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):          ( o.o )        UsagiInit
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           > ^ <
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Begin
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): No Script Path Provided, Using Default: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Attempting to Open Script: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Script Opened Successfully: fd=FD
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Redirecting stdin to Script File
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): stdin Successfully Redirected
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): SERVICE: ./resources/terminatingService.sh 
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Complete
+[TEST SERVICE] Terminating Service Started

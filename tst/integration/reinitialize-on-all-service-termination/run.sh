@@ -10,7 +10,7 @@ SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do
   DIR="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
   SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+  [[ "$SOURCE" != /* ]] && SOURCE="$DIR/$SOURCE"
 done
 SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" >/dev/null 2>&1 && pwd)"
 
@@ -31,17 +31,17 @@ cd "$CURRENT_DIR" || {
   exit 1
 }
 
-cd "tst/integration/restart-failed-service"
-echo "=== RUNNING INTEGRATION TEST CASE: restart-failed-service ==="
+cd "tst/integration/reinitialize-on-all-service-termination"
+echo "=== RUNNING INTEGRATION TEST CASE: reinitialize-on-all-service-termination ==="
 
 PROGRAM_PATH="../../.."
 PROGRAM="$PROGRAM_PATH/UsagiInit"
 
-# Rebuild UsagiInit with REINITIALIZE_ON_ALL_SERVICE_TERMINATION disabled
-echo "=== Rebuilding UsagiInit with REINITIALIZE_ON_ALL_SERVICE_TERMINATION disabled ==="
+# Rebuild UsagiInit with REINITIALIZE_ON_ALL_SERVICE_TERMINATION enabled
+echo "=== Rebuilding UsagiInit with REINITIALIZE_ON_ALL_SERVICE_TERMINATION enabled ==="
 (
     cd "$PROGRAM_PATH"
-    ./scripts/build.sh -DREINITIALIZE_ON_ALL_SERVICE_TERMINATION=OFF
+    ./scripts/build.sh -DREINITIALIZE_ON_ALL_SERVICE_TERMINATION=ON
 )
 echo "=== Rebuild complete ==="
 
@@ -55,9 +55,9 @@ TMP_FILTERED_EXPECTED=$(mktemp)
 PID=$!
 
 echo "=== Test program now running with PID: $PID ==="
-sleep 10
-kill -SIGINT "$PID"
-wait "$PID"
+sleep 3 # Give enough time for service to terminate and UsagiInit to reinitialize
+kill -SIGINT "$PID" # Send SIGINT to the *original* UsagiInit process, which should have re-exec'd
+wait "$PID" || true # wait might fail if the PID is already gone due to re-exec
 
 # Normalize both actual and expected output
 normalize() {
@@ -68,7 +68,9 @@ normalize() {
         -e 's/Service added \(PID: [0-9]+\)/Service added (PID: PID)/g' \
         -e 's/Service \(PID: [0-9]+\)/Service (PID: PID)/g' \
         -e 's/fd=[0-9]+/fd=FD/g' \
-        -e 's/Service removed \(PID: [0-9]+\)/Service removed (PID: PID)/g'
+        -e 's/Service removed \(PID: [0-9]+\)/Service removed (PID: PID)/g' \
+        -e 's/Process Group PGID: [0-9]+/Process Group PGID: PGID/g' \
+        -e 's/PID: [0-9]+/PID: PID/g'
 }
 
 # Apply normalization

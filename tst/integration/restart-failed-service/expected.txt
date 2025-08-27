@@ -1,18 +1,18 @@
-[INFO] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:21):           /\_/\
-[INFO] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:22):          ( o.o )        UsagiInit
-[INFO] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:23):           > ^ <
-[INFO] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:25): Init Begin
-[DEBUG] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:33): No Script Path Provided, Using Default: ./UsagiInit.sh
-[INFO] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:37): Attempting to Open Script: ./UsagiInit.sh
-[DEBUG] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:44): Script Opened Successfully: fd=3
-[DEBUG] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:45): Redirecting stdin to Script File
-[DEBUG] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:53): stdin Successfully Redirected
-[INFO] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/shell/executor.c:89): SERVICE: ./resources/unhappyService.sh 
-[INFO] 2025-08-26 18:52:31 (/home/user/workspace/UsagiInit/src/main.c:77): Init Complete
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           /\_/\
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):          ( o.o )        UsagiInit
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           > ^ <
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Begin
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): No Script Path Provided, Using Default: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Attempting to Open Script: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Script Opened Successfully: fd=FD
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Redirecting stdin to Script File
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): stdin Successfully Redirected
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): SERVICE: ./resources/unhappyService.sh 
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Complete
 [TEST SERVICE] Unhappy Service Error Terminated!
-[WARN] 2025-08-26 18:52:32 (/home/user/workspace/UsagiInit/src/guardian.c:28): Service (unhappyService.sh) failed with status 1. Restarting...
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service (unhappyService.sh) failed with status 1. Restarting...
 [TEST SERVICE] Unhappy Service Error Terminated!
-[WARN] 2025-08-26 18:52:33 (/home/user/workspace/UsagiInit/src/guardian.c:28): Service (unhappyService.sh) failed with status 1. Restarting...
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service (unhappyService.sh) failed with status 1. Restarting...
 [TEST SERVICE] Unhappy Service Error Terminated!
-[ERROR] 2025-08-26 18:52:34 (/home/user/workspace/UsagiInit/src/guardian.c:45): Service (unhappyService.sh) has reached the maximum restart limit.
-[DEBUG] 2025-08-26 18:52:34 (/home/user/workspace/UsagiInit/src/services.c:73): Service removed (PID: 21013).
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service (unhappyService.sh) has reached the maximum restart limit.
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service removed (PID: PID).
