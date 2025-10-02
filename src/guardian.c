@@ -12,7 +12,7 @@
 #include <unistd.h>
 
 #ifdef RELEASE_MODE
-#define MAX_RESTARTS 10
+#define MAX_RESTARTS 999
 #else
 #define MAX_RESTARTS 2
 #endif
