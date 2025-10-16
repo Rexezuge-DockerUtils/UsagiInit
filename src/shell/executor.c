@@ -41,6 +41,7 @@ static void execute_pipeline(char *cmdline) {
 
       char *args[MAX_ARGS];
       parse_command(cmds[i], args);
+      expand_variables(args);
       handle_redirection(args);
 
       execvp(args[0], args);
@@ -60,6 +61,7 @@ static void execute_pipeline(char *cmdline) {
 
     char *args[MAX_ARGS];
     parse_command(cmds[num_cmds - 1], args);
+    expand_variables(args);
     handle_redirection(args);
 
     execvp(args[0], args);
@@ -98,9 +100,23 @@ void run_command(char *line) {
 
   char *args[MAX_ARGS];
   parse_command(line, args);
+  expand_variables(args);
 
   if (args[0] == NULL)
     return;
+
+  if (strcmp(args[0], "export") == 0) {
+    if (args[1] != NULL) {
+      char *name = strtok(args[1], "=");
+      char *value = strtok(NULL, "");
+      if (name != NULL && value != NULL) {
+        setenv(name, value, 1);
+      } else {
+        LOG_ERROR("export: invalid format. Use VAR=value\n");
+      }
+    }
+    return;
+  }
 
   if (strcmp(args[0], "cd") == 0) {
     if (args[1] == NULL || chdir(args[1]) != 0)

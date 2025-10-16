@@ -41,3 +41,15 @@ char *trim_whitespace(char *str) {
   *(end + 1) = 0;
   return str;
 }
+
+void expand_variables(char **args) {
+  for (int i = 0; args[i] != NULL; i++) {
+    if (args[i][0] == '$') {
+      char *var_name = args[i] + 1; // Skip the '$'
+      char *value = getenv(var_name);
+      if (value != NULL) {
+        args[i] = value;
+      }
+    }
+  }
+}
