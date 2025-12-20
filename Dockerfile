@@ -17,11 +17,15 @@ RUN chmod +x scripts/release_static.sh
 RUN ./scripts/release_static.sh
 
 ## Compress executable
-FROM rexezugedockerutils/upx AS compressor
+FROM rexezugedockerutils/upx AS upx
 
-COPY --from=0 /app/UsagiInit/UsagiInit /UsagiInit
+FROM debian:stable-slim AS compressor
 
-RUN /upx --best --lzma /UsagiInit
+COPY --from=compiler /app/UsagiInit/UsagiInit /UsagiInit
+
+COPY --from=upx /upx /usr/local/bin/upx
+
+RUN upx --best --lzma /UsagiInit
 
 # Final stage
 FROM busybox:stable-musl
