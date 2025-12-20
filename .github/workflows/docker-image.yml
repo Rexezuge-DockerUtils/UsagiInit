@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
 
     - name: Set up Docker Buildx
@@ -22,20 +22,26 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Set image name and tags
+    - name: Set Image Name and Tags
       id: vars
       run: |
         IMAGE_NAME=rexezugedockerutils/usagi-init
-        GIT_SHA=${{ github.sha }}
+        GIT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+        UNIX_TS=$(date +%s)
+        if [[ "${{ github.event_name }}" == "schedule" ]]; then
+          TAG="auto-${UNIX_TS}"
+        else
+          TAG="${GIT_SHA}"
+        fi
         echo "image_name=${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
-        echo "commit_sha=${GIT_SHA}" >> "$GITHUB_OUTPUT"
+        echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
-    - name: Build and push multi-platform image
+    - name: Build and Push Multi-Platform Image
       uses: docker/build-push-action@v5
       with:
         context: .
         platforms: linux/amd64,linux/arm64
         push: true
         tags: |
-          ${{ steps.vars.outputs.image_name }}:${{ steps.vars.outputs.commit_sha }}
+          ${{ steps.vars.outputs.image_name }}:${{ steps.vars.outputs.tag }}
           ${{ steps.vars.outputs.image_name }}:latest
