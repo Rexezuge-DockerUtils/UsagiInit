@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "logger.h"
 #include "services.h"
+#include "shell/utils.h"
 
 #include <errno.h>
 #include <libgen.h>
@@ -30,6 +31,9 @@ void handle_child_exit(pid_t pid, int status) {
         LOG_WARN("Service (%s) terminated. Restarting...", service_name);
         pid_t new_pid = fork();
         if (new_pid == 0) {
+          setpgid(0, 0);
+          expand_variables(service->args);
+          handle_redirection(service->args);
           execvp(service->args[0], service->args);
           LOG_ERROR("Service (%s) failed to be restarted: %s", service_name,
                     strerror(errno));
@@ -57,6 +61,9 @@ void handle_child_exit(pid_t pid, int status) {
           }
           pid_t new_pid = fork();
           if (new_pid == 0) {
+            setpgid(0, 0);
+            expand_variables(service->args);
+            handle_redirection(service->args);
             execvp(service->args[0], service->args);
             LOG_ERROR("Service (%s) failed to be restarted: %s", service_name,
                       strerror(errno));
