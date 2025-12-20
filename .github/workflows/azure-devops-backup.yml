@@ -1,4 +1,4 @@
-name: Backup Main Branch (SSH) to Azure DevOps
+name: Backup Main Branch to Azure DevOps
 
 on:
   push:
@@ -7,7 +7,8 @@ on:
 
 jobs:
   backup-main-to-azure-devops:
-    name: Backup `main` branch to secondary repository using SSH
+    if: ${{ !github.event.repository.fork }}
+    name: Backup `main` Branch
     runs-on: ubuntu-latest
 
     steps:
