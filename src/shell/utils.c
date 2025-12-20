@@ -16,7 +16,12 @@ void handle_redirection(char **args) {
       }
       dup2(fd, STDIN_FILENO);
       close(fd);
-      args[i] = NULL;
+      // Shift remaining args left to remove redirection operator and filename
+      for (int j = i; args[j + 2] != NULL; j++) {
+        args[j] = args[j + 2];
+      }
+      args[i] = args[i + 1] = NULL;
+      i--; // Recheck current position
     } else if (strcmp(args[i], ">") == 0) {
       int fd = open(args[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
       if (fd < 0) {
@@ -25,7 +30,12 @@ void handle_redirection(char **args) {
       }
       dup2(fd, STDOUT_FILENO);
       close(fd);
-      args[i] = NULL;
+      // Shift remaining args left to remove redirection operator and filename
+      for (int j = i; args[j + 2] != NULL; j++) {
+        args[j] = args[j + 2];
+      }
+      args[i] = args[i + 1] = NULL;
+      i--; // Recheck current position
     } else if (strcmp(args[i], "2>") == 0) {
       int fd = open(args[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
       if (fd < 0) {
@@ -34,7 +44,12 @@ void handle_redirection(char **args) {
       }
       dup2(fd, STDERR_FILENO);
       close(fd);
-      args[i] = NULL;
+      // Shift remaining args left to remove redirection operator and filename
+      for (int j = i; args[j + 2] != NULL; j++) {
+        args[j] = args[j + 2];
+      }
+      args[i] = args[i + 1] = NULL;
+      i--; // Recheck current position
     }
   }
 }
