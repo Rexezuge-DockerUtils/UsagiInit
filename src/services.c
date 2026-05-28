@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #define MAX_SERVICES 100
@@ -47,6 +48,7 @@ void add_service(pid_t pid, char **args) {
   }
   services[service_count].args[i] = NULL;
   services[service_count].restart_count = 0;
+  services[service_count].next_restart = 0;
   service_count++;
 }
 
@@ -78,3 +80,22 @@ void remove_service(pid_t pid) {
 }
 
 int get_service_count() { return service_count; }
+
+time_t get_next_restart_time(void) {
+  time_t earliest = 0;
+  for (int i = 0; i < service_count; i++) {
+    if (services[i].next_restart > 0) {
+      if (earliest == 0 || services[i].next_restart < earliest)
+        earliest = services[i].next_restart;
+    }
+  }
+  return earliest;
+}
+
+Service *get_service_pending_restart(time_t now) {
+  for (int i = 0; i < service_count; i++) {
+    if (services[i].next_restart > 0 && services[i].next_restart <= now)
+      return &services[i];
+  }
+  return NULL;
+}

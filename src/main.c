@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <time.h>
 #include <unistd.h>
 
 #define MAX_CMD_LEN 1024
@@ -81,9 +82,20 @@ int main(int argc, char *argv[]) {
   fflush(stdout);
 
   while (1) {
+    time_t deadline = get_next_restart_time();
     int status;
-    pid_t pid = waitpid(-1, &status, 0);
-    handle_child_exit(pid, status);
+    pid_t pid;
+    if (deadline > 0) {
+      pid = waitpid(-1, &status, WNOHANG);
+      if (pid == 0) {
+        struct timespec ts = {0, 50 * 1000000L};
+        nanosleep(&ts, NULL);
+      }
+    } else {
+      pid = waitpid(-1, &status, 0);
+    }
+    if (pid > 0) handle_child_exit(pid, status);
+    restart_pending_services();
   }
 
   exit(EXIT_SUCCESS);
