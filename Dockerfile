@@ -22,15 +22,17 @@ FROM rexezugedockerutils/upx AS upx
 FROM debian:stable-slim AS compressor
 
 COPY --from=compiler /app/UsagiInit/UsagiInit /UsagiInit
+COPY --from=compiler /app/UsagiInit/usagi-reg /usagi-reg
 
 COPY --from=upx /upx /usr/local/bin/upx
 
-RUN upx --best --lzma /UsagiInit
+RUN upx --best --lzma /UsagiInit /usagi-reg
 
 # Final stage
 FROM busybox:stable-musl
 
 COPY --from=compressor /UsagiInit /UsagiInit
+COPY --from=compressor /usagi-reg /usagi-reg
 
 # Set default command
 ENTRYPOINT ["/UsagiInit"]

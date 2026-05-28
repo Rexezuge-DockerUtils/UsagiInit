@@ -5,14 +5,15 @@
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): No Script Path Provided, Using Default: ./UsagiInit.sh
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): Attempting to Open Script: ./UsagiInit.sh
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): Script Opened Successfully: fd=FD
-[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Redirecting stdin to Script File
-[LOGLEVEL] [TIMESTAMP] (SRC_PATH): stdin Successfully Redirected
-[LOGLEVEL] [TIMESTAMP] (SRC_PATH): SERVICE: ./resources/unhappyService.sh 
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Shell Begin
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): SERVICE: ./resources/unhappyService.sh
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Complete
 [TEST SERVICE] Unhappy Service Error Terminated!
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service (unhappyService.sh) failed with status 1. Restarting...
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Restarting service (unhappyService.sh)...
 [TEST SERVICE] Unhappy Service Error Terminated!
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service (unhappyService.sh) failed with status 1. Restarting...
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Restarting service (unhappyService.sh)...
 [TEST SERVICE] Unhappy Service Error Terminated!
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service (unhappyService.sh) has reached the maximum restart limit.
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service removed (PID: PID).

@@ -62,9 +62,9 @@ wait "$PID" || true # wait might fail if the PID is already gone due to re-exec
 # Normalize both actual and expected output
 normalize() {
     sed -E \
-        -e 's/\x1B\[[0-9;]*[a-zA-Z]//g' \
-        -e 's/\[[A-Z]+\] [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]+/\[LOGLEVEL\] [TIMESTAMP]/g' \
-        -e 's/\(.*\/UsagiInit\/src\/[^)]+\)/\(SRC_PATH\)/g' \
+        -e $'s/\x1B\[[0-9;]*[a-zA-Z]//g' \
+        -e 's/\[[A-Z]+\] [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]+/[LOGLEVEL] [TIMESTAMP]/g' \
+        -e 's/\(.*\/UsagiInit\/src\/[^)]+\)/(SRC_PATH)/g' \
         -e 's/Service added \(PID: [0-9]+\)/Service added (PID: PID)/g' \
         -e 's/Service \(PID: [0-9]+\)/Service (PID: PID)/g' \
         -e 's/fd=[0-9]+/fd=FD/g' \

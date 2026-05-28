@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 
 void log_message(const char *level, const char *color, const char *file,
                  int line, const char *fmt, ...) {
@@ -16,11 +17,13 @@ void log_message(const char *level, const char *color, const char *file,
     snprintf(timestamp, sizeof(timestamp), "unknown-time");
   }
 
+  int use_color = isatty(STDOUT_FILENO);
+
   // Print formatted log message
 #ifdef APP_NAME
-  fprintf(stdout, "%s[%s] %s (%s): ", color, level, timestamp, APP_NAME);
+  fprintf(stdout, "%s[%s] %s (%s): ", use_color ? color : "", level, timestamp, APP_NAME);
 #else
-  fprintf(stdout, "%s[%s] %s (%s:%d): ", color, level, timestamp, file, line);
+  fprintf(stdout, "%s[%s] %s (%s:%d): ", use_color ? color : "", level, timestamp, file, line);
 #endif
 
   va_list args;
@@ -28,6 +31,6 @@ void log_message(const char *level, const char *color, const char *file,
   vfprintf(stdout, fmt, args);
   va_end(args);
 
-  fprintf(stdout, "%s\n", COLOR_RESET); // Reset color and newline
+  fprintf(stdout, "%s\n", use_color ? COLOR_RESET : ""); // Reset color and newline
   fflush(stdout);
 }

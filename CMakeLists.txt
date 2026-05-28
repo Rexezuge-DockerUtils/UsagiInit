@@ -41,9 +41,10 @@ else()
     message(STATUS "RESTART_FAILED_SERVICES: OFF")
 endif()
 
-# Configure Library Sources (exclude main.c)
+# Configure Library Sources (exclude main.c and the usagi-reg helper)
 file(GLOB LIB_SOURCES "src/*.c" "src/*/*.c")
 list(REMOVE_ITEM LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
+list(REMOVE_ITEM LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/usagi-reg.c")
 
 # Configure Headers
 file(GLOB HEADERS "include/*.h" "include/*/*.h" "src/*.h" "src/*/*.h")
@@ -58,3 +59,6 @@ target_include_directories(usagi_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 # Main Executable
 add_executable(${PROJECT_NAME} src/main.c)
 target_link_libraries(${PROJECT_NAME} PRIVATE usagi_lib)
+
+# Service Registration Helper (deployed alongside UsagiInit)
+add_executable(usagi-reg src/usagi-reg.c)

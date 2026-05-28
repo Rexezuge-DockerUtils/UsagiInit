@@ -37,11 +37,12 @@ echo "=== RUNNING INTEGRATION TEST CASE: restart-failed-service ==="
 PROGRAM_PATH="../../.."
 PROGRAM="$PROGRAM_PATH/UsagiInit"
 
-# Rebuild UsagiInit with REINITIALIZE_ON_ALL_SERVICE_TERMINATION disabled
+# Rebuild UsagiInit with restart-on-failure enabled and reinitialize disabled
 echo "=== Rebuilding UsagiInit with REINITIALIZE_ON_ALL_SERVICE_TERMINATION disabled ==="
 (
     cd "$PROGRAM_PATH"
-    ./scripts/build.sh -DREINITIALIZE_ON_ALL_SERVICE_TERMINATION=OFF
+    ./scripts/build.sh -DREINITIALIZE_ON_ALL_SERVICE_TERMINATION=OFF \
+                       -DRESTART_FAILED_SERVICES=ON
 )
 echo "=== Rebuild complete ==="
 
@@ -62,13 +63,14 @@ wait "$PID"
 # Normalize both actual and expected output
 normalize() {
     sed -E \
-        -e 's/\x1B\[[0-9;]*[a-zA-Z]//g' \
-        -e 's/\[[A-Z]+\] [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]+/\[LOGLEVEL\] [TIMESTAMP]/g' \
-        -e 's/\(.*\/UsagiInit\/src\/[^)]+\)/\(SRC_PATH\)/g' \
+        -e $'s/\x1B\[[0-9;]*[a-zA-Z]//g' \
+        -e 's/\[[A-Z]+\] [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9:]+/[LOGLEVEL] [TIMESTAMP]/g' \
+        -e 's/\(.*\/UsagiInit\/src\/[^)]+\)/(SRC_PATH)/g' \
         -e 's/Service added \(PID: [0-9]+\)/Service added (PID: PID)/g' \
         -e 's/Service \(PID: [0-9]+\)/Service (PID: PID)/g' \
         -e 's/fd=[0-9]+/fd=FD/g' \
-        -e 's/Service removed \(PID: [0-9]+\)/Service removed (PID: PID)/g'
+        -e 's/Service removed \(PID: [0-9]+\)/Service removed (PID: PID)/g' \
+        -e 's/ in [0-9]+s\.\.\./\.\.\./g'
 }
 
 # Apply normalization

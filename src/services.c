@@ -29,13 +29,16 @@ void add_service(pid_t pid, char **args) {
   }
 
   char path[PATH_MAX];
-  if (args[0][0] == '/') {
-    if (snprintf(path, sizeof(path), "%s", args[0]) >= sizeof(path)) {
+  if (args[0][0] == '/' || strchr(args[0], '/') == NULL) {
+    /* Absolute path or bare command name (found via PATH): store as-is so
+     * execvp() can resolve it at restart time. */
+    if (snprintf(path, sizeof(path), "%s", args[0]) >= (int)sizeof(path)) {
       LOG_ERROR("Path is too long.");
       return;
     }
   } else {
-    if (snprintf(path, sizeof(path), "%s/%s", cwd, args[0]) >= sizeof(path)) {
+    /* Relative path containing '/': resolve against cwd. */
+    if (snprintf(path, sizeof(path), "%s/%s", cwd, args[0]) >= (int)sizeof(path)) {
       LOG_ERROR("Path is too long.");
       return;
     }

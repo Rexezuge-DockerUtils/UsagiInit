@@ -6,7 +6,7 @@
 
 | Directory | Purpose |
 |-----------|---------|
-| `src/`   | Source (shell/, logger.c, services.c, guardian.c, signals.c, globals.c, main.c) |
+| `src/`   | Source (shell/, logger.c, services.c, guardian.c, signals.c, globals.c, registration.c, main.c, usagi-reg.c) |
 | `include/` | Public headers mirroring src/ layout — all headers live here |
 | `tst/integration/` | Black-box integration tests that build the binary and compare stdout against expected snapshots |
 | `scripts/` | `build.sh` (dev) and `release_static.sh` (release) |
@@ -48,11 +48,14 @@ Set at compile-time via CMake:
 
 ## Architecture Notes
 
-- Two-phase execution: shell phase (interprets a script or stdin) → guardian phase (reaps children and restarts services).
-- `&` on a line makes that command a service (tracked in `services.c`.
+- Two-phase execution: shell phase → guardian phase (reaps children and restarts services).
+- **Shell phase (script mode):** the init script is preprocessed (bare `cmd &` lines become `usagi-reg cmd`) then run via `/bin/sh`, giving full POSIX shell syntax support. Interactive/fallback mode still uses the custom line executor.
+- **`usagi-reg`** is a small companion binary (compiled alongside `UsagiInit`). It forks the service, writes a registration message to the `USAGI_SVC_FD` pipe, then exits. A sync pipe ensures the service cannot exec until after the registration is sent, so `SERVICE:` logs appear before service output.
+- Registration pipe wire format: `pid\nargc\narg0\n…argN\n` (written atomically by `usagi-reg`, read by `src/registration.c`).
+- `&` on a line still registers that command as a service (preprocessor transforms it transparently).
 - Default script path: `./UsagiInit.sh`; argv[1] provides an alternate script.
-- `export VAR=value` and `$VAR` expansion are supported; persists into spawned processes.
-- Logging behavior changes between Debug and Release: `CMAKE_BUILD_TYPE=Release` neuters `LOG_DEBUG`/`LOG_TRACE` and strips file/line info.
+- `UsagiInit` calls `prctl(PR_SET_CHILD_SUBREAPER, 1)` so orphaned service children are reparented to it even outside a container.
+- Logging behavior changes between Debug and Release: `CMAKE_BUILD_TYPE=Release` neuters `LOG_DEBUG`/`LOG_TRACE` and strips file/line info. Colors are suppressed when stdout is not a tty.
 
 ## Code Style
 
