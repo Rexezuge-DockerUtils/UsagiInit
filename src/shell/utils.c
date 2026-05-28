@@ -6,55 +6,63 @@
 #include <string.h>
 #include <unistd.h>
 
+static void remove_args(char **args, int index, int count) {
+  int j = index;
+  while (args[j + count] != NULL) {
+    args[j] = args[j + count];
+    j++;
+  }
+  args[j] = NULL;
+}
+
+static void redirect_to_file(int target_fd, const char *path,
+                             const char *error_context, int flags) {
+  if (path == NULL || path[0] == '\0') {
+    fprintf(stderr, "%s: missing file operand\n", error_context);
+    exit(EXIT_FAILURE);
+  }
+
+  int fd = open(path, flags, 0644);
+  if (fd < 0) {
+    perror(error_context);
+    exit(EXIT_FAILURE);
+  }
+  if (dup2(fd, target_fd) < 0) {
+    perror("dup2");
+    close(fd);
+    exit(EXIT_FAILURE);
+  }
+  close(fd);
+}
+
 void handle_redirection(char **args) {
   for (int i = 0; args[i] != NULL; ++i) {
     if (strcmp(args[i], "<") == 0) {
-      int fd = open(args[i + 1], O_RDONLY);
-      if (fd < 0) {
-        perror("open for input");
-        exit(EXIT_FAILURE);
-      }
-      dup2(fd, STDIN_FILENO);
-      close(fd);
-      // Shift remaining args left to remove redirection operator and filename
-      int j = i;
-      while (args[j + 2] != NULL) {
-        args[j] = args[j + 2];
-        j++;
-      }
-      args[j] = NULL;
+      redirect_to_file(STDIN_FILENO, args[i + 1], "open for input", O_RDONLY);
+      remove_args(args, i, 2);
       i--; // Recheck current position
     } else if (strcmp(args[i], ">") == 0) {
-      int fd = open(args[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-      if (fd < 0) {
-        perror("open for output");
-        exit(EXIT_FAILURE);
-      }
-      dup2(fd, STDOUT_FILENO);
-      close(fd);
-      // Shift remaining args left to remove redirection operator and filename
-      int j = i;
-      while (args[j + 2] != NULL) {
-        args[j] = args[j + 2];
-        j++;
-      }
-      args[j] = NULL;
+      redirect_to_file(STDOUT_FILENO, args[i + 1], "open for output",
+                       O_CREAT | O_WRONLY | O_TRUNC);
+      remove_args(args, i, 2);
       i--; // Recheck current position
     } else if (strcmp(args[i], "2>") == 0) {
-      int fd = open(args[i + 1], O_CREAT | O_WRONLY | O_TRUNC, 0644);
-      if (fd < 0) {
-        perror("open for stderr");
-        exit(EXIT_FAILURE);
+      redirect_to_file(STDERR_FILENO, args[i + 1], "open for stderr",
+                       O_CREAT | O_WRONLY | O_TRUNC);
+      remove_args(args, i, 2);
+      i--; // Recheck current position
+    } else if (strncmp(args[i], "2>", 2) == 0) {
+      const char *target = args[i] + 2;
+      if (strcmp(target, "&1") == 0) {
+        if (dup2(STDOUT_FILENO, STDERR_FILENO) < 0) {
+          perror("dup2 stderr to stdout");
+          exit(EXIT_FAILURE);
+        }
+      } else {
+        redirect_to_file(STDERR_FILENO, target, "open for stderr",
+                         O_CREAT | O_WRONLY | O_TRUNC);
       }
-      dup2(fd, STDERR_FILENO);
-      close(fd);
-      // Shift remaining args left to remove redirection operator and filename
-      int j = i;
-      while (args[j + 2] != NULL) {
-        args[j] = args[j + 2];
-        j++;
-      }
-      args[j] = NULL;
+      remove_args(args, i, 1);
       i--; // Recheck current position
     }
   }

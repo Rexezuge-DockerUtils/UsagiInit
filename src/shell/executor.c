@@ -14,6 +14,19 @@
 #define MAX_ARGS 128
 #define MAX_CMDS 10
 
+static char *find_background_operator(char *line) {
+  char *end = line + strlen(line);
+  while (end > line &&
+         (*(end - 1) == ' ' || *(end - 1) == '\t' || *(end - 1) == '\n')) {
+    end--;
+  }
+
+  if (end > line && *(end - 1) == '&') {
+    return end - 1;
+  }
+  return NULL;
+}
+
 static void execute_pipeline(char *cmdline) {
   char *cmds[MAX_CMDS];
   int num_cmds = 0;
@@ -82,9 +95,10 @@ void run_command(char *line) {
   }
 
   int background = 0;
-  if (strchr(line, '&')) {
+  char *background_operator = find_background_operator(line);
+  if (background_operator != NULL) {
     background = 1;
-    *strchr(line, '&') = '\0';
+    *background_operator = '\0';
   }
 
   if (background) {

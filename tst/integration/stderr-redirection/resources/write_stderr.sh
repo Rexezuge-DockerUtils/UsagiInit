@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+printf '%s\n' "$1" >&2
