@@ -1,0 +1,12 @@
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           /\_/\
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):          ( o.o )        UsagiInit
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):           > ^ <
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Begin
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): No Script Path Provided, Using Default: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Attempting to Open Script: ./UsagiInit.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Script Opened Successfully: fd=FD
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Shell Begin
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): SERVICE: ./resources/printArgs.sh
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Complete
+args: hello world
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH): Service removed (PID: PID).
