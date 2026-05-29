@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include "guardian.h"
 #include "globals.h"
 #include "logger.h"
@@ -40,7 +41,10 @@ static void do_restart(Service *service) {
     setpgid(0, 0);
     expand_variables(service->args);
     handle_redirection(service->args);
-    execvp(service->args[0], service->args);
+    if (service->env)
+      execvpe(service->args[0], service->args, service->env);
+    else
+      execvp(service->args[0], service->args);
     LOG_ERROR("Service (%s) failed to be restarted: %s", name, strerror(errno));
     exit(EXIT_FAILURE);
   } else {

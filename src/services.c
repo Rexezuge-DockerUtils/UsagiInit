@@ -13,7 +13,7 @@
 static Service services[MAX_SERVICES];
 static int service_count = 0;
 
-void add_service(pid_t pid, char **args) {
+void add_service(pid_t pid, char **args, char **env) {
   if (service_count >= MAX_SERVICES) {
     LOG_WARN("Maximum number of services reached.");
     return;
@@ -50,8 +50,9 @@ void add_service(pid_t pid, char **args) {
     services[service_count].args[i] = strdup(args[i]);
   }
   services[service_count].args[i] = NULL;
+  services[service_count].env           = env;
   services[service_count].restart_count = 0;
-  services[service_count].next_restart = 0;
+  services[service_count].next_restart  = 0;
   service_count++;
 }
 
@@ -67,14 +68,14 @@ Service *find_service(pid_t pid) {
 void remove_service(pid_t pid) {
   for (int i = 0; i < service_count; i++) {
     if (services[i].pid == pid) {
-      // Free the duplicated strings
-      for (int j = 0; services[i].args[j] != NULL; j++) {
+      for (int j = 0; services[i].args[j] != NULL; j++)
         free(services[i].args[j]);
+      if (services[i].env) {
+        for (int j = 0; services[i].env[j]; j++) free(services[i].env[j]);
+        free(services[i].env);
       }
-      // Shift the remaining services
-      for (int j = i; j < service_count - 1; j++) {
+      for (int j = i; j < service_count - 1; j++)
         services[j] = services[j + 1];
-      }
       service_count--;
       LOG_DEBUG("Service removed (PID: %d).", pid);
       return;

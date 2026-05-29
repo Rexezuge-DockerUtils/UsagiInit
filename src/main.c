@@ -167,11 +167,13 @@ int main(int argc, char *argv[]) {
 
       pid_t   svc_pid;
       char  **svc_args;
+      char  **svc_env;
       int     r;
-      while ((r = read_registration(reg_pipe[0], &svc_pid, &svc_args)) == REG_OK) {
+      while ((r = read_registration(reg_pipe[0], &svc_pid, &svc_args, &svc_env)) == REG_OK) {
         LOG_INFO("SERVICE: %s", svc_args[0]);
-        add_service(svc_pid, svc_args);
+        add_service(svc_pid, svc_args, svc_env);
         free_registration_argv(svc_args);
+        /* svc_env ownership transferred to Service */
       }
 
       int    sh_status;
@@ -183,13 +185,15 @@ int main(int argc, char *argv[]) {
     /* Drain any registrations buffered after sh exited. */
     fcntl(reg_pipe[0], F_SETFL, 0);
     {
-      pid_t  svc_pid;
-      char **svc_args;
-      int    r;
-      while ((r = read_registration(reg_pipe[0], &svc_pid, &svc_args)) == REG_OK) {
+      pid_t   svc_pid;
+      char  **svc_args;
+      char  **svc_env;
+      int     r;
+      while ((r = read_registration(reg_pipe[0], &svc_pid, &svc_args, &svc_env)) == REG_OK) {
         LOG_INFO("SERVICE: %s", svc_args[0]);
-        add_service(svc_pid, svc_args);
+        add_service(svc_pid, svc_args, svc_env);
         free_registration_argv(svc_args);
+        /* svc_env ownership transferred to Service */
       }
     }
 

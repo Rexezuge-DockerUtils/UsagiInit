@@ -41,7 +41,7 @@ static int buf_read_line(char *out, int cap) {
   return -1;
 }
 
-int read_registration(int fd, pid_t *pid_out, char ***argv_out) {
+int read_registration(int fd, pid_t *pid_out, char ***argv_out, char ***env_out) {
   int fill = buf_fill(fd);
   if (fill == REG_EOF && s_start == s_end) return REG_EOF;
   if (fill == REG_AGAIN && s_start == s_end) return REG_AGAIN;
@@ -85,8 +85,52 @@ int read_registration(int fd, pid_t *pid_out, char ***argv_out) {
   }
   argv[argc] = NULL;
 
+  /* Parse environment: envc\nenv0\n...envN\n */
+  if (buf_read_line(tmp, sizeof(tmp)) < 0) {
+    for (int j = 0; j < argc; j++) free(argv[j]);
+    free(argv);
+    s_start = save_start;
+    return REG_AGAIN;
+  }
+  int envc = atoi(tmp);
+  if (envc < 0) {
+    for (int j = 0; j < argc; j++) free(argv[j]);
+    free(argv);
+    s_start = save_start;
+    return REG_ERROR;
+  }
+
+  char **env = calloc(envc + 1, sizeof(char *));
+  if (!env) {
+    for (int j = 0; j < argc; j++) free(argv[j]);
+    free(argv);
+    return REG_ERROR;
+  }
+
+  for (int i = 0; i < envc; i++) {
+    if (buf_read_line(tmp, sizeof(tmp)) < 0) {
+      for (int j = 0; j < i; j++) free(env[j]);
+      free(env);
+      for (int j = 0; j < argc; j++) free(argv[j]);
+      free(argv);
+      s_start = save_start;
+      return REG_AGAIN;
+    }
+    env[i] = strdup(tmp);
+    if (!env[i]) {
+      for (int j = 0; j < i; j++) free(env[j]);
+      free(env);
+      for (int j = 0; j < argc; j++) free(argv[j]);
+      free(argv);
+      s_start = save_start;
+      return REG_ERROR;
+    }
+  }
+  env[envc] = NULL;
+
   *pid_out  = pid;
   *argv_out = argv;
+  *env_out  = env;
   return REG_OK;
 }
 
@@ -94,4 +138,10 @@ void free_registration_argv(char **argv) {
   if (!argv) return;
   for (int i = 0; argv[i]; i++) free(argv[i]);
   free(argv);
+}
+
+void free_registration_env(char **env) {
+  if (!env) return;
+  for (int i = 0; env[i]; i++) free(env[i]);
+  free(env);
 }

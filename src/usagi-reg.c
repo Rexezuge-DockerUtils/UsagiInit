@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
+
+extern char **environ;
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
@@ -45,19 +48,44 @@ int main(int argc, char *argv[]) {
   /* Parent: write registration, then signal the child. */
   close(sync[0]);
 
-  /* Build registration message: pid\nargc\narg0\narg1\n...argN\n
-   * Written in a single write() for pipe atomicity. */
-  char buf[4096];
-  int  len    = 0;
-  int  n_args = argc - 1;
+  int n_args = argc - 1;
+  int envc   = 0;
+  while (environ[envc]) envc++;
 
-  len += snprintf(buf + len, sizeof(buf) - len, "%d\n%d\n", (int)pid, n_args);
-  for (int i = 1; i < argc && len < (int)sizeof(buf) - 1; i++)
-    len += snprintf(buf + len, sizeof(buf) - len, "%s\n", argv[i]);
+  /* Calculate total message size: pid\nargc\narg0\n...argN\nenvc\nenv0\n...envM\n */
+  size_t size = 0;
+  {
+    char tmp[32];
+    size += (size_t)snprintf(tmp, sizeof(tmp), "%d\n%d\n", (int)pid, n_args);
+  }
+  for (int i = 1; i < argc; i++)
+    size += strlen(argv[i]) + 1;
+  {
+    char tmp[32];
+    size += (size_t)snprintf(tmp, sizeof(tmp), "%d\n", envc);
+  }
+  for (int i = 0; i < envc; i++)
+    size += strlen(environ[i]) + 1;
+
+  char *buf = malloc(size + 1);
+  if (!buf) {
+    perror("usagi-reg: malloc");
+    close(reg_fd);
+    close(sync[1]);
+    return 1;
+  }
+
+  int pos = 0;
+  pos += sprintf(buf + pos, "%d\n%d\n", (int)pid, n_args);
+  for (int i = 1; i < argc; i++)
+    pos += sprintf(buf + pos, "%s\n", argv[i]);
+  pos += sprintf(buf + pos, "%d\n", envc);
+  for (int i = 0; i < envc; i++)
+    pos += sprintf(buf + pos, "%s\n", environ[i]);
 
   ssize_t written = 0;
-  while (written < len) {
-    ssize_t r = write(reg_fd, buf + written, len - written);
+  while (written < (ssize_t)pos) {
+    ssize_t r = write(reg_fd, buf + written, (size_t)(pos - written));
     if (r < 0) {
       perror("usagi-reg: write");
       break;
@@ -65,6 +93,7 @@ int main(int argc, char *argv[]) {
     written += r;
   }
 
+  free(buf);
   close(reg_fd);
   close(sync[1]); /* Signal child to exec. */
   return 0;

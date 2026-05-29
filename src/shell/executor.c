@@ -150,7 +150,7 @@ void run_command(char *line) {
     LOG_ERROR("%s: %s\n", args[0], strerror(errno));
     exit(EXIT_FAILURE);
   } else if (background) {
-    add_service(pid, args);
+    add_service(pid, args, NULL);
   } else {
     setpgid(pid, pid);
     waitpid(pid, NULL, 0);
