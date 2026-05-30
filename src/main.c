@@ -12,10 +12,10 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <poll.h>
 #include <sys/prctl.h>
 #include <sys/wait.h>
 #include <time.h>
@@ -28,17 +28,20 @@
 static void prepend_self_to_path(void) {
   char self[PATH_MAX];
   ssize_t n = readlink("/proc/self/exe", self, sizeof(self) - 1);
-  if (n <= 0) return;
+  if (n <= 0)
+    return;
   self[n] = '\0';
 
   char *slash = strrchr(self, '/');
-  if (!slash) return;
+  if (!slash)
+    return;
   *slash = '\0';
 
   const char *existing = getenv("PATH");
-  char       *new_path;
+  char *new_path;
   if (existing && existing[0]) {
-    if (asprintf(&new_path, "%s:%s", self, existing) < 0) return;
+    if (asprintf(&new_path, "%s:%s", self, existing) < 0)
+      return;
   } else {
     new_path = strdup(self);
   }
@@ -52,20 +55,21 @@ static void prepend_self_to_path(void) {
 static void run_guardian(void) {
   /* Drain any zombies that accumulated during the shell phase. */
   {
-    int     status;
-    pid_t   pid;
+    int status;
+    pid_t pid;
     while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
       handle_child_exit(pid, status);
   }
 
-  /* Nothing to guard — exit cleanly (e.g. script called 'exit' with no services). */
+  /* Nothing to guard — exit cleanly (e.g. script called 'exit' with no
+   * services). */
   if (get_service_count() == 0)
     exit(EXIT_SUCCESS);
 
   while (1) {
     time_t deadline = get_next_restart_time();
-    int    status;
-    pid_t  pid;
+    int status;
+    pid_t pid;
     if (deadline > 0) {
       pid = waitpid(-1, &status, WNOHANG);
       if (pid == 0) {
@@ -75,7 +79,8 @@ static void run_guardian(void) {
     } else {
       pid = waitpid(-1, &status, 0);
     }
-    if (pid > 0) handle_child_exit(pid, status);
+    if (pid > 0)
+      handle_child_exit(pid, status);
     restart_pending_services();
   }
 }
@@ -165,19 +170,20 @@ int main(int argc, char *argv[]) {
       struct pollfd pfd = {reg_pipe[0], POLLIN, 0};
       poll(&pfd, 1, 5);
 
-      pid_t   svc_pid;
-      char  **svc_args;
-      char  **svc_env;
-      int     r;
-      while ((r = read_registration(reg_pipe[0], &svc_pid, &svc_args, &svc_env)) == REG_OK) {
+      pid_t svc_pid;
+      char **svc_args;
+      char **svc_env;
+      int r;
+      while ((r = read_registration(reg_pipe[0], &svc_pid, &svc_args,
+                                    &svc_env)) == REG_OK) {
         LOG_INFO("SERVICE: %s", svc_args[0]);
-        add_service(svc_pid, svc_args, svc_env);
+        if (add_service(svc_pid, svc_args, svc_env) < 0)
+          free_registration_env(svc_env);
         free_registration_argv(svc_args);
-        /* svc_env ownership transferred to Service */
       }
 
-      int    sh_status;
-      pid_t  exited = waitpid(sh_pid, &sh_status, WNOHANG);
+      int sh_status;
+      pid_t exited = waitpid(sh_pid, &sh_status, WNOHANG);
       if (exited == sh_pid || (exited < 0 && errno != EINTR))
         sh_done = 1;
     }
@@ -185,15 +191,16 @@ int main(int argc, char *argv[]) {
     /* Drain any registrations buffered after sh exited. */
     fcntl(reg_pipe[0], F_SETFL, 0);
     {
-      pid_t   svc_pid;
-      char  **svc_args;
-      char  **svc_env;
-      int     r;
-      while ((r = read_registration(reg_pipe[0], &svc_pid, &svc_args, &svc_env)) == REG_OK) {
+      pid_t svc_pid;
+      char **svc_args;
+      char **svc_env;
+      int r;
+      while ((r = read_registration(reg_pipe[0], &svc_pid, &svc_args,
+                                    &svc_env)) == REG_OK) {
         LOG_INFO("SERVICE: %s", svc_args[0]);
-        add_service(svc_pid, svc_args, svc_env);
+        if (add_service(svc_pid, svc_args, svc_env) < 0)
+          free_registration_env(svc_env);
         free_registration_argv(svc_args);
-        /* svc_env ownership transferred to Service */
       }
     }
 
@@ -214,7 +221,8 @@ int main(int argc, char *argv[]) {
      * is the only path here, so just read terminal. */
     while (1) {
       prompt_for_intput();
-      if (!fgets(line, MAX_CMD_LEN, stdin)) break;
+      if (!fgets(line, MAX_CMD_LEN, stdin))
+        break;
       run_command(line);
     }
     free(line);

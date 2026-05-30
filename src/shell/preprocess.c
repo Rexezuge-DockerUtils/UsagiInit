@@ -1,4 +1,5 @@
 #include "shell/preprocess.h"
+#include "internal.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +8,7 @@
 
 /* Return 1 if the physical line ends with a continuation backslash (an odd
  * run of backslashes before the newline, outside of single quotes). */
-static int ends_with_continuation(const char *line, int len) {
+int ends_with_continuation(const char *line, int len) {
   int end = len;
   if (end > 0 && line[end - 1] == '\n')
     end--;
@@ -49,7 +50,7 @@ static int ends_with_continuation(const char *line, int len) {
  * comments and trailing whitespace.  Returns -1 for blank/comment lines.
  * Tracks double- and single-quote state to avoid mis-identifying quoted text.
  */
-static int find_content_end(const char *line, int len) {
+int find_content_end(const char *line, int len) {
   int dq = 0, sq = 0, last = -1;
   for (int i = 0; i < len; i++) {
     char c = line[i];
@@ -84,7 +85,7 @@ static int find_content_end(const char *line, int len) {
 }
 
 /* Return 1 if there is an unquoted '&' in line[0..before_pos). */
-static int has_amp_before(const char *line, int before_pos) {
+int has_amp_before(const char *line, int before_pos) {
   int dq = 0, sq = 0;
   for (int i = 0; i < before_pos; i++) {
     char c = line[i];
@@ -106,8 +107,7 @@ static int has_amp_before(const char *line, int before_pos) {
       else if (c == '&') {
         /* &N is fd duplication in a redirection (e.g. 2>&1) — not a
          * background operator; skip it and keep scanning. */
-        if (i + 1 < before_pos &&
-            line[i + 1] >= '0' && line[i + 1] <= '9') {
+        if (i + 1 < before_pos && line[i + 1] >= '0' && line[i + 1] <= '9') {
           i++;
           continue;
         }
@@ -118,7 +118,7 @@ static int has_amp_before(const char *line, int before_pos) {
   return 0;
 }
 
-static void transform_line(const char *line, FILE *out) {
+void transform_line(const char *line, FILE *out) {
   int len = (int)strlen(line);
   int last = find_content_end(line, len);
 

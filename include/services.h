@@ -13,7 +13,7 @@ typedef struct {
   time_t  next_restart;
 } Service;
 
-void     add_service(pid_t pid, char **args, char **env);
+int      add_service(pid_t pid, char **args, char **env);
 Service *find_service(pid_t pid);
 void     remove_service(pid_t pid);
 int      get_service_count();

@@ -62,3 +62,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE usagi_lib)
 
 # Service Registration Helper (deployed alongside UsagiInit)
 add_executable(usagi-reg src/usagi-reg.c)
+
+# Unit Tests (requires cmocka: sudo zypper install libcmocka-devel)
+option(UNIT_TESTING "Build unit tests (requires cmocka)" OFF)
+if(UNIT_TESTING)
+  find_package(cmocka CONFIG REQUIRED)
+  enable_testing()
+  target_compile_definitions(usagi_lib PUBLIC UNIT_TESTING)
+  add_subdirectory(tst/unit)
+endif()

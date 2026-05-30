@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 #include "guardian.h"
 #include "globals.h"
+#include "internal.h"
 #include "logger.h"
 #include "services.h"
 #include "shell/utils.h"
@@ -21,16 +22,14 @@
 #endif
 
 #define BACKOFF_BASE_SECS 1
-#define BACKOFF_MAX_SECS  30
+#define BACKOFF_MAX_SECS 30
 
-#if defined(RESTART_TERMINATED_SERVICES) || defined(RESTART_FAILED_SERVICES)
-static time_t compute_backoff(int restart_count) {
+time_t compute_backoff(int restart_count) {
   time_t delay = BACKOFF_BASE_SECS;
   for (int i = 0; i < restart_count && delay < BACKOFF_MAX_SECS; i++)
     delay *= 2;
   return delay < BACKOFF_MAX_SECS ? delay : BACKOFF_MAX_SECS;
 }
-#endif
 
 static void do_restart(Service *service) {
   char *name_dup = strdup(service->args[0]);
@@ -87,10 +86,12 @@ void handle_child_exit(pid_t pid, int status) {
               time_t delay = compute_backoff(service->restart_count);
               service->next_restart = time(NULL) + delay;
               if (WIFEXITED(status)) {
-                LOG_WARN("Service (%s) failed with status %d. Restarting in %lds...",
-                         service_name, WEXITSTATUS(status), (long)delay);
+                LOG_WARN(
+                    "Service (%s) failed with status %d. Restarting in %lds...",
+                    service_name, WEXITSTATUS(status), (long)delay);
               } else {
-                LOG_WARN("Service (%s) terminated by signal %d. Restarting in %lds...",
+                LOG_WARN("Service (%s) terminated by signal %d. Restarting in "
+                         "%lds...",
                          service_name, WTERMSIG(status), (long)delay);
               }
             } else {

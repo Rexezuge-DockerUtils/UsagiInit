@@ -1,4 +1,5 @@
 #include "services.h"
+#include "internal.h"
 #include "logger.h"
 
 #include <limits.h>
@@ -13,10 +14,11 @@
 static Service services[MAX_SERVICES];
 static int service_count = 0;
 
-void add_service(pid_t pid, char **args, char **env) {
+int add_service(pid_t pid, char **args, char **env) {
   if (service_count >= MAX_SERVICES) {
-    LOG_WARN("Maximum number of services reached.");
-    return;
+    LOG_ERROR("Maximum number of services reached; cannot register PID %d.",
+              pid);
+    return -1;
   }
 
   services[service_count].pid = pid;
@@ -25,7 +27,7 @@ void add_service(pid_t pid, char **args, char **env) {
   char cwd[PATH_MAX];
   if (getcwd(cwd, sizeof(cwd)) == NULL) {
     LOG_ERROR("getcwd() error");
-    return;
+    return -1;
   }
 
   char path[PATH_MAX];
@@ -34,13 +36,14 @@ void add_service(pid_t pid, char **args, char **env) {
      * execvp() can resolve it at restart time. */
     if (snprintf(path, sizeof(path), "%s", args[0]) >= (int)sizeof(path)) {
       LOG_ERROR("Path is too long.");
-      return;
+      return -1;
     }
   } else {
     /* Relative path containing '/': resolve against cwd. */
-    if (snprintf(path, sizeof(path), "%s/%s", cwd, args[0]) >= (int)sizeof(path)) {
+    if (snprintf(path, sizeof(path), "%s/%s", cwd, args[0]) >=
+        (int)sizeof(path)) {
       LOG_ERROR("Path is too long.");
-      return;
+      return -1;
     }
   }
 
@@ -50,11 +53,27 @@ void add_service(pid_t pid, char **args, char **env) {
     services[service_count].args[i] = strdup(args[i]);
   }
   services[service_count].args[i] = NULL;
-  services[service_count].env           = env;
+  services[service_count].env = env;
   services[service_count].restart_count = 0;
-  services[service_count].next_restart  = 0;
+  services[service_count].next_restart = 0;
   service_count++;
+  return 0;
 }
+
+#ifdef UNIT_TESTING
+void services_reset(void) {
+  for (int i = 0; i < service_count; i++) {
+    for (int j = 0; services[i].args[j] != NULL; j++)
+      free(services[i].args[j]);
+    if (services[i].env) {
+      for (int j = 0; services[i].env[j]; j++)
+        free(services[i].env[j]);
+      free(services[i].env);
+    }
+  }
+  service_count = 0;
+}
+#endif
 
 Service *find_service(pid_t pid) {
   for (int i = 0; i < service_count; i++) {
@@ -71,7 +90,8 @@ void remove_service(pid_t pid) {
       for (int j = 0; services[i].args[j] != NULL; j++)
         free(services[i].args[j]);
       if (services[i].env) {
-        for (int j = 0; services[i].env[j]; j++) free(services[i].env[j]);
+        for (int j = 0; services[i].env[j]; j++)
+          free(services[i].env[j]);
         free(services[i].env);
       }
       for (int j = i; j < service_count - 1; j++)

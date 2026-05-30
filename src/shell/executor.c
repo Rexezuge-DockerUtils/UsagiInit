@@ -1,4 +1,5 @@
 #include "shell/executor.h"
+#include "internal.h"
 #include "logger.h"
 #include "services.h"
 #include "shell/parser.h"
@@ -14,7 +15,7 @@
 #define MAX_ARGS 128
 #define MAX_CMDS 10
 
-static char *find_background_operator(char *line) {
+char *find_background_operator(char *line) {
   char *end = line + strlen(line);
   while (end > line &&
          (*(end - 1) == ' ' || *(end - 1) == '\t' || *(end - 1) == '\n')) {
@@ -150,7 +151,7 @@ void run_command(char *line) {
     LOG_ERROR("%s: %s\n", args[0], strerror(errno));
     exit(EXIT_FAILURE);
   } else if (background) {
-    add_service(pid, args, NULL);
+    (void)add_service(pid, args, NULL);
   } else {
     setpgid(pid, pid);
     waitpid(pid, NULL, 0);
