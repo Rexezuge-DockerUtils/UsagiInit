@@ -76,15 +76,17 @@ static void test_parse_tabs_as_delimiters(void **state) {
 
 static void test_parse_many_args(void **state) {
   (void)state;
-  /* Build a line with MAX_ARGS-1 space-separated tokens */
-  char line[MAX_ARGS * 3];
-  int pos = 0;
+  /* MAX_ARGS-1 tokens; longest is "a126 " (5 chars) → need ~635 bytes */
+  char line[MAX_ARGS * 8];
+  size_t pos = 0;
   for (int i = 0; i < MAX_ARGS - 1; i++) {
-    pos += snprintf(line + pos, sizeof(line) - pos, "a%d ", i);
+    int n = snprintf(line + pos, sizeof(line) - pos, "a%d ", i);
+    if (n > 0 && (size_t)n < sizeof(line) - pos)
+      pos += (size_t)n;
   }
   char *args[MAX_ARGS];
   parse_command(line, args);
-  /* Verify termination — should not overflow the array */
+  /* Verify termination — must not overflow the array */
   int count = 0;
   while (args[count] != NULL)
     count++;
