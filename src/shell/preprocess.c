@@ -103,8 +103,16 @@ static int has_amp_before(const char *line, int before_pos) {
         dq = 1;
       else if (c == '#')
         break;
-      else if (c == '&')
+      else if (c == '&') {
+        /* &N is fd duplication in a redirection (e.g. 2>&1) — not a
+         * background operator; skip it and keep scanning. */
+        if (i + 1 < before_pos &&
+            line[i + 1] >= '0' && line[i + 1] <= '9') {
+          i++;
+          continue;
+        }
         return 1;
+      }
     }
   }
   return 0;
