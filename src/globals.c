@@ -6,3 +6,5 @@ int phase = PHASE_BEGIN;
 int interactivity = INTERACTIVE;
 
 char **usagi_argv;
+
+volatile sig_atomic_t shutting_down = 0;

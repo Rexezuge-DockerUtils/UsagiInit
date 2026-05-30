@@ -61,53 +61,58 @@ void handle_child_exit(pid_t pid, int status) {
     if (service != NULL) {
       char *service_name_dup = strdup(service->args[0]);
 
+      if (shutting_down) {
+        remove_service(pid);
+      } else {
 #if defined(RESTART_TERMINATED_SERVICES)
-      {
-        char *service_name = basename(service_name_dup);
-        if (service->restart_count < MAX_RESTARTS) {
-          time_t delay = compute_backoff(service->restart_count);
-          service->next_restart = time(NULL) + delay;
-          LOG_WARN("Service (%s) terminated. Restarting in %lds...",
-                   service_name, (long)delay);
-        } else {
-          LOG_ERROR("Service (%s) has reached the maximum restart limit.",
-                    service_name);
-          remove_service(pid);
-        }
-      }
-#elif defined(RESTART_FAILED_SERVICES)
-      {
-        char *service_name = basename(service_name_dup);
-        if ((WIFEXITED(status) && WEXITSTATUS(status) != 0) ||
-            WIFSIGNALED(status)) {
+        {
+          char *service_name = basename(service_name_dup);
           if (service->restart_count < MAX_RESTARTS) {
             time_t delay = compute_backoff(service->restart_count);
             service->next_restart = time(NULL) + delay;
-            if (WIFEXITED(status)) {
-              LOG_WARN("Service (%s) failed with status %d. Restarting in %lds...",
-                       service_name, WEXITSTATUS(status), (long)delay);
-            } else {
-              LOG_WARN("Service (%s) terminated by signal %d. Restarting in %lds...",
-                       service_name, WTERMSIG(status), (long)delay);
-            }
+            LOG_WARN("Service (%s) terminated. Restarting in %lds...",
+                     service_name, (long)delay);
           } else {
             LOG_ERROR("Service (%s) has reached the maximum restart limit.",
                       service_name);
             remove_service(pid);
           }
-        } else {
-          remove_service(pid);
         }
-      }
+#elif defined(RESTART_FAILED_SERVICES)
+        {
+          char *service_name = basename(service_name_dup);
+          if ((WIFEXITED(status) && WEXITSTATUS(status) != 0) ||
+              WIFSIGNALED(status)) {
+            if (service->restart_count < MAX_RESTARTS) {
+              time_t delay = compute_backoff(service->restart_count);
+              service->next_restart = time(NULL) + delay;
+              if (WIFEXITED(status)) {
+                LOG_WARN("Service (%s) failed with status %d. Restarting in %lds...",
+                         service_name, WEXITSTATUS(status), (long)delay);
+              } else {
+                LOG_WARN("Service (%s) terminated by signal %d. Restarting in %lds...",
+                         service_name, WTERMSIG(status), (long)delay);
+              }
+            } else {
+              LOG_ERROR("Service (%s) has reached the maximum restart limit.",
+                        service_name);
+              remove_service(pid);
+            }
+          } else {
+            remove_service(pid);
+          }
+        }
 #else
-      remove_service(pid);
+        remove_service(pid);
 #endif
+      }
+
       free(service_name_dup);
     }
   }
 
 #ifdef REINITIALIZE_ON_ALL_SERVICE_TERMINATION
-  if (get_service_count() == 0) {
+  if (!shutting_down && get_service_count() == 0) {
     LOG_FATAL("All services terminated. Reinitializing...");
     execvp(usagi_argv[0], usagi_argv);
     LOG_ERROR("Failed to restart UsagiInit: %s", strerror(errno));

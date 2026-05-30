@@ -13,6 +13,7 @@
 static void signal_handler(int signo) {
   // Forward signal to the entire process group
   if (signo == SIGINT || signo == SIGTERM || signo == SIGHUP) {
+    shutting_down = 1;
 #ifdef TERMINATE_ALL_PROCESSES
     kill(-1, signo);
 #endif
