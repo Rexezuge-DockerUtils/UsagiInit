@@ -1,5 +1,6 @@
 UsagiInit
 usagi-reg
+tst/unit/test_*
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,cmake,c
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,cmake,c
