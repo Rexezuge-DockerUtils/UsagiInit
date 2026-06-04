@@ -70,7 +70,8 @@ normalize() {
         -e 's/fd=[0-9]+/fd=FD/g' \
         -e 's/Service removed \(PID: [0-9]+\)/Service removed (PID: PID)/g' \
         -e 's/Process Group PGID: [0-9]+/Process Group PGID: PGID/g' \
-        -e 's/PID: [0-9]+/PID: PID/g'
+        -e 's/PID: [0-9]+/PID: PID/g' \
+        -e 's/\( o\.o \)        [0-9a-f]{8}/( o.o )        INSTANCE_ID/g'
 }
 
 # Apply normalization

@@ -18,6 +18,7 @@
 #include <string.h>
 #include <sys/prctl.h>
 #include <sys/wait.h>
+#include <sys/random.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -88,8 +89,14 @@ static void run_guardian(void) {
 int main(int argc, char *argv[]) {
   usagi_argv = argv;
 
+  unsigned char id_bytes[4];
+  getrandom(id_bytes, sizeof(id_bytes), 0);
+  char instance_id[9];
+  snprintf(instance_id, sizeof(instance_id), "%02x%02x%02x%02x",
+           id_bytes[0], id_bytes[1], id_bytes[2], id_bytes[3]);
+
   LOG_INFO("          /\\_/\\");
-  LOG_INFO("         ( o.o )        UsagiInit");
+  LOG_INFO("         ( o.o )        %s", instance_id);
   LOG_INFO("          > ^ <");
   LOG_INFO("Init Begin");
 

@@ -1,5 +1,5 @@
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH):           /\_/\
-[LOGLEVEL] [TIMESTAMP] (SRC_PATH):          ( o.o )        UsagiInit
+[LOGLEVEL] [TIMESTAMP] (SRC_PATH):          ( o.o )        INSTANCE_ID
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH):           > ^ <
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): Init Begin
 [LOGLEVEL] [TIMESTAMP] (SRC_PATH): No Script Path Provided, Using Default: ./UsagiInit.sh

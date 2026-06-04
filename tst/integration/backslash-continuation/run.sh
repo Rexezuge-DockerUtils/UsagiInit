@@ -65,7 +65,8 @@ normalize() {
         -e 's/Service \(PID: [0-9]+\)/Service (PID: PID)/g' \
         -e 's/fd=[0-9]+/fd=FD/g' \
         -e 's/Service removed \(PID: [0-9]+\)/Service removed (PID: PID)/g' \
-        -e 's/ in [0-9]+s\.\.\./\.\.\./g'
+        -e 's/ in [0-9]+s\.\.\./\.\.\./g' \
+        -e 's/\( o\.o \)        [0-9a-f]{8}/( o.o )        INSTANCE_ID/g'
 }
 
 normalize < "$TMP_OUTPUT" > "$TMP_FILTERED_OUTPUT"
